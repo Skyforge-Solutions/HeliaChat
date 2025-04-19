@@ -51,8 +51,8 @@ export default function SessionItem({
       ref={dropdownRef}
       className={`flex items-center justify-between rounded-md px-2 py-2 ${
         currentSessionId === session.id 
-          ? 'bg-gray-200 dark:bg-gray-700' 
-          : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+          ? 'bg-secondary' 
+          : 'hover:bg-secondary/50'
       }`}
     >
       {isEditing === session.id ? (
@@ -62,7 +62,7 @@ export default function SessionItem({
           onChange={(e) => setEditName(e.target.value)}
           onBlur={() => handleEditSave(session.id)}
           onKeyDown={(e) => handleKeyDown(e)}
-          className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm w-full"
+          className="bg-background border border-input rounded px-2 py-1 text-sm w-full text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
           autoFocus
         />
       ) : (
@@ -72,11 +72,11 @@ export default function SessionItem({
             onClick={() => switchSession(session.id)}
             title={collapsed ? session.name : ''}
           >
-            <FiMessageSquare className={`${collapsed ? 'mr-0' : 'mr-2'} flex-shrink-0`} />
+            <FiMessageSquare className={`${collapsed ? 'mr-0' : 'mr-2'} flex-shrink-0 text-foreground`} />
             {!collapsed && (
               <>
-                <span className="truncate">{session.name}</span>
-                <span className="ml-2 text-xs text-gray-500">{formatDate(session.timestamp)}</span>
+                <span className="truncate text-foreground">{session.name}</span>
+                <span className="ml-2 text-xs text-muted-foreground">{formatDate(session.timestamp)}</span>
               </>
             )}
           </button>
@@ -84,7 +84,7 @@ export default function SessionItem({
           {!collapsed && (
             <button
               onClick={toggleMenu}
-              className="p-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+              className="p-1 text-muted-foreground hover:text-foreground"
             >
               <FiMoreVertical size={16} />
             </button>

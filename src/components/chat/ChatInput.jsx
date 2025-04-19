@@ -11,25 +11,25 @@ export default function ChatInput({ onSendMessage, isDisabled }) {
   
   const models = [
     {
-    id: 'sun-shield',
-    name: 'Helia Sun Shield',
-    description: 'Digital safety & online awareness for your family',
-  },
-  {
-    id: 'growth-ray',
-    name: 'Helia Growth Ray',
-    description: 'Emotional intelligence & behavior guidance for kids',
-  },
-  {
-    id: 'sunbeam',
-    name: 'Helia Sunbeam',
-    description: 'Confidence building & family bonding support',
-  },
-  {
-    id: 'inner-dawn',
-    name: 'Helia Inner Dawn',
-    description: 'Mindfulness, calm parenting & relationship wellness',
-  }
+      id: 'sun-shield',
+      name: 'Helia Sun Shield',
+      description: 'Digital safety & online awareness for your family',
+    },
+    {
+      id: 'growth-ray',
+      name: 'Helia Growth Ray',
+      description: 'Emotional intelligence & behavior guidance for kids',
+    },
+    {
+      id: 'sunbeam',
+      name: 'Helia Sunbeam',
+      description: 'Confidence building & family bonding support',
+    },
+    {
+      id: 'inner-dawn',
+      name: 'Helia Inner Dawn',
+      description: 'Mindfulness, calm parenting & relationship wellness',
+    }
   ];
   const [selectedModel, setSelectedModel] = useState(models[0]);
 
@@ -70,25 +70,30 @@ export default function ChatInput({ onSendMessage, isDisabled }) {
   };
 
   return (
-      <div className="bg-white dark:bg-gray-900 py-4 px-4">
+    <div className="bg-background py-4 px-4">
       <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
-        {/* image preview row with raw markup */}
+        {/* image preview row */}
         {imagePreview && (
           <div className="mb-2 relative inline-block">
-            <img src={imagePreview} alt="Preview"
-                 className="h-20 rounded-md border border-gray-300 dark:border-gray-700" />
-            <button type="button"
-                    onClick={removeImage}
-                    className="absolute top-1 right-1 bg-gray-800/70 text-white rounded-full p-1">
+            <img 
+              src={imagePreview} 
+              alt="Preview"
+              className="h-20 rounded-md border border-border" 
+            />
+            <button 
+              type="button"
+              onClick={removeImage}
+              className="absolute top-1 right-1 bg-background/70 text-foreground rounded-full p-1"
+            >
               ✕
             </button>
           </div>
         )}
 
         {/* input bar  */}
-        <div className="flex items-center w-full bg-gray-100 dark:bg-gray-800 rounded-xl
+        <div className="flex items-center w-full bg-secondary rounded-xl
                 px-3 gap-2 focus-within:ring-2
-                focus-within:ring-primary-light dark:focus-within:ring-primary-dark">
+                focus-within:ring-primary">
 
           {/* + icon */}
           <ImageUploader
@@ -119,14 +124,14 @@ export default function ChatInput({ onSendMessage, isDisabled }) {
           <button
             type="submit"
             disabled={!message.trim() && !selectedFile || isDisabled}
-            className="text-gray-500 hover:text-primary-light dark:hover:text-primary-dark disabled:opacity-40"
+            className="text-muted-foreground hover:text-primary disabled:opacity-40"
           >
             <FiSend size={20}/>
           </button>
         </div>
 
         {isDisabled && (
-          <p className="mt-2 text-center text-sm text-amber-600 dark:text-amber-400 animate-pulse">
+          <p className="mt-2 text-center text-sm text-destructive animate-pulse">
             AI is responding…
           </p>
         )}

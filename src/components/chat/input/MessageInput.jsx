@@ -26,7 +26,7 @@ export default function MessageInput({
       onKeyDown={onKeyDown}
       placeholder={isDisabled ? "Waiting for response..." : "Type here..."}
       disabled={isDisabled}
-      className={`w-full bg-transparent py-3 focus:outline-none resize-y text-text-light dark:text-text-dark ${extraClass} ${isDisabled ? 'opacity-60' : ''}`}
+      className={`w-full bg-transparent py-3 focus:outline-none resize-y text-foreground ${extraClass} ${isDisabled ? 'opacity-60' : ''}`}
       rows={1}
       style={{ maxHeight: '200px' }}
     />

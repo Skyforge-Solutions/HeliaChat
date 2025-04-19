@@ -18,8 +18,8 @@ export default function ImageUploader({
   };
   
   const btnCls = inline
-    ? 'w-6 h-6 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-    : 'p-3 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 ' + (isDisabled ? 'opacity-50 cursor-not-allowed' : '');
+    ? 'w-6 h-6 flex items-center justify-center text-muted-foreground hover:text-foreground'
+    : 'p-3 rounded-full bg-secondary text-secondary-foreground hover:bg-accent ' + (isDisabled ? 'opacity-50 cursor-not-allowed' : '');
   
   return (
     <>
@@ -29,13 +29,13 @@ export default function ImageUploader({
           <img 
             src={imagePreview} 
             alt="Preview" 
-            className="h-20 rounded-md border border-gray-300 dark:border-gray-700" 
+            className="h-20 rounded-md border border-border" 
           />
           <button 
             type="button"
             onClick={onRemoveImage}
             disabled={isDisabled}
-            className="absolute top-1 right-1 bg-gray-800 bg-opacity-70 text-white rounded-full p-1"
+            className="absolute top-1 right-1 bg-background/70 text-foreground rounded-full p-1"
             aria-label="Remove image"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

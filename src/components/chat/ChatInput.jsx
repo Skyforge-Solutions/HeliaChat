@@ -9,11 +9,27 @@ export default function ChatInput({ onSendMessage, isDisabled }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   
-  // Model selection state 
   const models = [
-    { id: 'gpt-4', name: 'GPT-4', description: 'Most capable model' },
-    { id: 'gpt-3.5', name: 'GPT-3.5', description: 'Fast and efficient' },
-    { id: 'claude', name: 'Claude', description: 'Anthropic\'s assistant' }
+    {
+    id: 'sun-shield',
+    name: 'Helia Sun Shield',
+    description: 'Digital safety & online awareness for your family',
+  },
+  {
+    id: 'growth-ray',
+    name: 'Helia Growth Ray',
+    description: 'Emotional intelligence & behavior guidance for kids',
+  },
+  {
+    id: 'sunbeam',
+    name: 'Helia Sunbeam',
+    description: 'Confidence building & family bonding support',
+  },
+  {
+    id: 'inner-dawn',
+    name: 'Helia Inner Dawn',
+    description: 'Mindfulness, calm parenting & relationship wellness',
+  }
   ];
   const [selectedModel, setSelectedModel] = useState(models[0]);
 
@@ -54,51 +70,65 @@ export default function ChatInput({ onSendMessage, isDisabled }) {
   };
 
   return (
-    <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 py-4 px-4">
+      <div className="bg-white dark:bg-gray-900 py-4 px-4">
       <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
-        <ImageUploader
-          selectedFile={selectedFile}
-          imagePreview={imagePreview}
-          onFileChange={handleFileChange}
-          onRemoveImage={removeImage}
-          isDisabled={isDisabled}
-        />
-        
-        <div className="flex items-end gap-2">
-          <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-lg relative">
-            <ModelSelector
-              models={models}
-              selectedModel={selectedModel}
-              onModelSelect={setSelectedModel}
-              isDisabled={isDisabled}
-            />
-            
-            <MessageInput
-              message={message}
-              setMessage={setMessage}
-              onKeyDown={handleKeyDown}
-              isDisabled={isDisabled}
-            />
+        {/* image preview row with raw markup */}
+        {imagePreview && (
+          <div className="mb-2 relative inline-block">
+            <img src={imagePreview} alt="Preview"
+                 className="h-20 rounded-md border border-gray-300 dark:border-gray-700" />
+            <button type="button"
+                    onClick={removeImage}
+                    className="absolute top-1 right-1 bg-gray-800/70 text-white rounded-full p-1">
+              ✕
+            </button>
           </div>
-          
-          {/* Send button */}
+        )}
+
+        {/* input bar  */}
+        <div className="flex items-center w-full bg-gray-100 dark:bg-gray-800 rounded-xl
+                px-3 gap-2 focus-within:ring-2
+                focus-within:ring-primary-light dark:focus-within:ring-primary-dark">
+
+          {/* + icon */}
+          <ImageUploader
+            inline
+            selectedFile={selectedFile}
+            onFileChange={handleFileChange}
+            isDisabled={isDisabled}
+          />
+
+          {/* model badge */}
+          <ModelSelector
+            models={models}
+            selectedModel={selectedModel}
+            onModelSelect={setSelectedModel}
+            isDisabled={isDisabled}
+          />
+
+          {/* textarea */}
+          <MessageInput
+            message={message}
+            setMessage={setMessage}
+            onKeyDown={handleKeyDown}
+            isDisabled={isDisabled}
+            extraClass="flex-1 bg-transparent py-3"
+          />
+
+          {/* send arrow */}
           <button
             type="submit"
             disabled={!message.trim() && !selectedFile || isDisabled}
-            className={`p-3 rounded-full ${
-              (message.trim() || selectedFile) && !isDisabled
-                ? 'bg-primary-light dark:bg-primary-dark text-white' 
-                : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed opacity-50'
-            }`}
+            className="text-gray-500 hover:text-primary-light dark:hover:text-primary-dark disabled:opacity-40"
           >
-            <FiSend size={18} />
+            <FiSend size={20}/>
           </button>
         </div>
-        
+
         {isDisabled && (
-          <div className="mt-2 flex items-center justify-center text-sm text-amber-600 dark:text-amber-400">
-            <span className="animate-pulse">AI is responding...</span>
-          </div>
+          <p className="mt-2 text-center text-sm text-amber-600 dark:text-amber-400 animate-pulse">
+            AI is responding…
+          </p>
         )}
       </form>
     </div>

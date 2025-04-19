@@ -38,7 +38,7 @@ export default function Navbar() {
   // Mock user data - would come from user context in a real app
   const user = {
     name: userData.name || 'User',
-    credits: 120,
+    credits: 100,
     subscriptionType: 'Free',
     language: 'English'
   };
@@ -74,9 +74,9 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 w-full bg-background-light dark:bg-background-dark border-b border-gray-200 dark:border-gray-700 px-4 py-2 z-10">
+      <nav className="fixed top-0 w-full bg-background-light dark:bg-background-dark px-4 py-2 z-10">
         <div className="flex justify-between items-center">
-          <div className="flex items-center">
+          <div className="flex items-center ml-11">
             <img src={logo} alt="HeliaChat Logo" className="h-8" />
           </div>
           

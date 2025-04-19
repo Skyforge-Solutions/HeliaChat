@@ -87,7 +87,7 @@ export default function UserSettingsForm({ onClose, initialData }) {
                   id="age" 
                   name="age"
                   min="1"
-                  max="120"
+                  max="100"
                   value={userData.age}
                   onChange={handleUserDataChange}
                   className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white"

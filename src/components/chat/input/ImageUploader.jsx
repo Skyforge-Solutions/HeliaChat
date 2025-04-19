@@ -1,12 +1,13 @@
 import { useRef } from 'react';
-import { FiImage } from 'react-icons/fi';
+import { FiImage, FiPlus } from 'react-icons/fi';
 
 export default function ImageUploader({ 
   selectedFile,
   imagePreview, 
   onFileChange, 
   onRemoveImage,
-  isDisabled
+  isDisabled,
+  inline = false
 }) {
   const fileInputRef = useRef(null);
   
@@ -15,6 +16,10 @@ export default function ImageUploader({
       fileInputRef.current.click();
     }
   };
+  
+  const btnCls = inline
+    ? 'w-6 h-6 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+    : 'p-3 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 ' + (isDisabled ? 'opacity-50 cursor-not-allowed' : '');
   
   return (
     <>
@@ -55,9 +60,9 @@ export default function ImageUploader({
         type="button"
         onClick={handleFileButtonClick}
         disabled={isDisabled}
-        className={`p-3 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={btnCls}
       >
-        <FiImage size={18} />
+        {inline ? <FiPlus size={18}/> : <FiImage size={18}/>}
       </button>
     </>
   );

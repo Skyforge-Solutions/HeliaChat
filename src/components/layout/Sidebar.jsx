@@ -63,7 +63,7 @@ export default function Sidebar({ collapsed }) {
       />
 
       {/* Sidebar */}
-      <div className={`fixed top-0 left-0 h-screen ${collapsed ? 'w-16' : 'w-64'} bg-secondary-light dark:bg-secondary-dark transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} transition-all duration-300 ease-in-out md:relative z-10 pt-14 pb-4 flex flex-col`}>
+      <div className={`fixed top-12 left-0 h-[calc(100vh-48px)] ${collapsed ? 'w-16' : 'w-64'} bg-white dark:bg-gray-900 transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} transition-all duration-300 ease-in-out md:relative z-10 pt-4 pb-4 flex flex-col`}>
         <div className={`px-2 py-2 ${collapsed ? 'flex justify-center' : ''}`}>
           <button 
             onClick={createNewSession}
@@ -108,7 +108,7 @@ export default function Sidebar({ collapsed }) {
         {/* Footer section - hidden when collapsed */}
         {!collapsed && (
           <div className="mt-auto px-4 py-2 text-xs text-gray-500 dark:text-gray-400">
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-2">
+            <div className="pt-2">
               <button 
                 onClick={() => setShowClearConfirm(true)}
                 className="w-full text-left py-1 px-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-red-600 dark:text-red-400"

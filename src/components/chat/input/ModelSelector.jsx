@@ -3,16 +3,34 @@ import { FiChevronDown } from 'react-icons/fi';
 
 // Default model options
 const defaultModels = [
-  { id: 'gpt-4', name: 'GPT-4', description: 'Most capable model' },
-  { id: 'gpt-3.5', name: 'GPT-3.5', description: 'Fast and efficient' },
-  { id: 'claude', name: 'Claude', description: 'Anthropic\'s assistant' }
+  {
+    id: 'sun-shield',
+    name: 'Helia Sun Shield',
+    description: 'Digital safety & online awareness for your family',
+  },
+  {
+    id: 'growth-ray',
+    name: 'Helia Growth Ray',
+    description: 'Emotional intelligence & behavior guidance for kids',
+  },
+  {
+    id: 'sunbeam',
+    name: 'Helia Sunbeam',
+    description: 'Confidence building & family bonding support',
+  },
+  {
+    id: 'inner-dawn',
+    name: 'Helia Inner Dawn',
+    description: 'Mindfulness, calm parenting & relationship wellness',
+  }
 ];
 
 export default function ModelSelector({ 
   models = defaultModels,
   selectedModel,
   onModelSelect,
-  isDisabled
+  isDisabled,
+  wrapperClass = ''
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
@@ -28,7 +46,7 @@ export default function ModelSelector({
   };
 
   return (
-    <div className="absolute top-2 left-2">
+    <div className={`${wrapperClass}`}>
       <div className="relative">
         <button
           type="button"

@@ -26,7 +26,7 @@ function App() {
             
             <button 
               onClick={toggleSidebar} 
-              className="hidden md:flex items-center justify-center absolute left-0 top-1/2 transform -translate-y-1/2 ml-2 z-20 bg-gray-200 dark:bg-gray-700 rounded-full p-1 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+              className="hidden md:flex items-center justify-center absolute left-0 top-1/2 transform -translate-y-1/2 ml-2 z-30 bg-gray-200 dark:bg-gray-700 rounded-full p-1 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
               style={{ 
                 left: sidebarCollapsed ? '3.5rem' : '15rem',
                 transition: 'left 0.3s ease'

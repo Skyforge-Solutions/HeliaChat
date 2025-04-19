@@ -67,7 +67,7 @@ export default function Sidebar({ collapsed }) {
         <div className={`px-2 py-2 ${collapsed ? 'flex justify-center' : ''}`}>
           <button 
             onClick={createNewSession}
-            className={`${collapsed ? 'p-2' : 'w-full'} flex items-center justify-center gap-2 px-4 py-2 bg-primary-light dark:bg-primary-dark text-white rounded-md hover:opacity-90 transition-opacity shadow-sm`}
+            className={`${collapsed ? 'p-2' : 'w-full'} flex items-center justify-center gap-2 px-4 py-2 bg-primary-light dark:bg-primary-dark text-black rounded-md hover:opacity-90 transition-opacity shadow-sm`}
             title="New Chat"
           >
             <FiPlus size={16} /> {!collapsed && <span className="font-medium">New Chat</span>}

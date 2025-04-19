@@ -1,6 +1,6 @@
 export default function ClearAllConfirmation({ onClose, onConfirm }) {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
         <h3 className="text-lg font-medium text-text-light dark:text-text-dark">Clear all chats</h3>
         <p className="mt-2 text-gray-600 dark:text-gray-400">

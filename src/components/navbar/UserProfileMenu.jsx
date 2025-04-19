@@ -42,7 +42,7 @@ export default function UserProfileMenu({ user, onOpenUserSettings }) {
         onClick={toggleProfileMenu}
         className="flex items-center space-x-1 p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
       >
-        <div className="w-8 h-8 rounded-full bg-primary-light dark:bg-primary-dark text-white flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full bg-primary-light dark:bg-primary-dark text-black flex items-center justify-center">
           <FiUser />
         </div>
         <FiChevronDown className="text-gray-600 dark:text-gray-300" />

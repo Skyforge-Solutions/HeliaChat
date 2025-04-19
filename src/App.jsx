@@ -13,6 +13,7 @@ function App() {
     setSidebarCollapsed(!sidebarCollapsed);
   };
 
+  
   return (
     <ThemeProvider>
       <ChatProvider>

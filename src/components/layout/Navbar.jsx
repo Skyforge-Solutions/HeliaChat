@@ -3,6 +3,7 @@ import { FiCreditCard } from 'react-icons/fi';
 import ThemeSwitcher from '../navbar/ThemeSwitcher';
 import UserProfileMenu from '../navbar/UserProfileMenu';
 import UserSettingsForm from '../navbar/UserSettingsForm';
+import logo from '../../assets/logo.svg';
 
 export default function Navbar() {
   const [showUserDataForm, setShowUserDataForm] = useState(false);
@@ -76,7 +77,7 @@ export default function Navbar() {
       <nav className="fixed top-0 w-full bg-background-light dark:bg-background-dark border-b border-gray-200 dark:border-gray-700 px-4 py-2 z-10">
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <h1 className="text-xl font-bold text-primary-light dark:text-primary-dark">HeliaChat</h1>
+            <img src={logo} alt="HeliaChat Logo" className="h-8" />
           </div>
           
           <div className="flex items-center space-x-4">

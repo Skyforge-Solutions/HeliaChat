@@ -11,7 +11,7 @@ export default function ChatArea({ sidebarCollapsed }) {
   const [isAiResponding, setIsAiResponding] = useState(false);
   const [streamingText, setStreamingText] = useState('');
   const [streamingMessageId, setStreamingMessageId] = useState(null);
-
+ 
   useEffect(() => {
     scrollToBottom();
   }, [currentSession?.messages, streamingText]);

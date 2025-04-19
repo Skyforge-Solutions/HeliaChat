@@ -9,7 +9,7 @@ export default function ChatInput({ onSendMessage, isDisabled }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   
-  // Model selection state
+  // Model selection state 
   const models = [
     { id: 'gpt-4', name: 'GPT-4', description: 'Most capable model' },
     { id: 'gpt-3.5', name: 'GPT-3.5', description: 'Fast and efficient' },

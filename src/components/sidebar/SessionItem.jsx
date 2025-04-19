@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FiMessageSquare, FiMoreVertical } from 'react-icons/fi';
 import SessionDropdownMenu from './SessionDropdownMenu';
 
@@ -16,20 +16,39 @@ export default function SessionItem({
   formatDate
 }) {
   const [openMenu, setOpenMenu] = useState(false);
+  const dropdownRef = useRef();
 
   const toggleMenu = (e) => {
     e.stopPropagation();
     setOpenMenu(!openMenu);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setOpenMenu(false);
+      }
+    };
+
+    if (openMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openMenu]);
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       handleEditSave(session.id);
+      setOpenMenu(false); // Close the dropdown after rename
     }
   };
 
   return (
     <div 
+      ref={dropdownRef}
       className={`flex items-center justify-between rounded-md px-2 py-2 ${
         currentSessionId === session.id 
           ? 'bg-gray-200 dark:bg-gray-700' 

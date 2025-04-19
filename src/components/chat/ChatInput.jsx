@@ -8,7 +8,7 @@ export default function ChatInput({ onSendMessage, isDisabled }) {
   const [message, setMessage] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  
+
   const models = [
     {
       id: 'sun-shield',
@@ -29,11 +29,11 @@ export default function ChatInput({ onSendMessage, isDisabled }) {
       id: 'inner-dawn',
       name: 'Helia Inner Dawn',
       description: 'Mindfulness, calm parenting & relationship wellness',
-    }
+    },
   ];
   const [selectedModel, setSelectedModel] = useState(models[0]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     if ((message.trim() || selectedFile) && !isDisabled) {
       onSendMessage(message, selectedFile);
@@ -43,18 +43,18 @@ export default function ChatInput({ onSendMessage, isDisabled }) {
     }
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = e => {
     if (e.key === 'Enter' && !e.shiftKey && !isDisabled) {
       e.preventDefault();
       handleSubmit(e);
     }
   };
-  
-  const handleFileChange = (e) => {
+
+  const handleFileChange = e => {
     const file = e.target.files[0];
     if (file && file.type.startsWith('image/')) {
       setSelectedFile(file);
-      
+
       // Create preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -63,7 +63,7 @@ export default function ChatInput({ onSendMessage, isDisabled }) {
       reader.readAsDataURL(file);
     }
   };
-  
+
   const removeImage = () => {
     setSelectedFile(null);
     setImagePreview(null);
@@ -75,12 +75,12 @@ export default function ChatInput({ onSendMessage, isDisabled }) {
         {/* image preview row */}
         {imagePreview && (
           <div className="mb-2 relative inline-block">
-            <img 
-              src={imagePreview} 
+            <img
+              src={imagePreview}
               alt="Preview"
-              className="h-20 rounded-md border border-border" 
+              className="h-20 rounded-md border border-border"
             />
-            <button 
+            <button
               type="button"
               onClick={removeImage}
               className="absolute top-1 right-1 bg-background/70 text-foreground rounded-full p-1"
@@ -91,10 +91,11 @@ export default function ChatInput({ onSendMessage, isDisabled }) {
         )}
 
         {/* input bar  */}
-        <div className="flex items-center w-full bg-secondary rounded-xl
+        <div
+          className="flex items-center w-full bg-secondary rounded-xl
                 px-3 gap-2 focus-within:ring-2
-                focus-within:ring-primary">
-
+                focus-within:ring-primary"
+        >
           {/* + icon */}
           <ImageUploader
             inline
@@ -123,10 +124,10 @@ export default function ChatInput({ onSendMessage, isDisabled }) {
           {/* send arrow */}
           <button
             type="submit"
-            disabled={!message.trim() && !selectedFile || isDisabled}
+            disabled={(!message.trim() && !selectedFile) || isDisabled}
             className="text-muted-foreground hover:text-primary disabled:opacity-40"
           >
-            <FiSend size={20}/>
+            <FiSend size={20} />
           </button>
         </div>
 

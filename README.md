@@ -18,12 +18,14 @@ HeliaChat is a modern, responsive chat application built with React and Vite.
 1. **Fork the Repository**: Create a fork of this repository to your GitHub account.
 
 2. **Clone the Repository**: Clone your forked repository to your local machine.
+
    ```bash
    git clone https://github.com/your-username/HeliaChat.git
    cd HeliaChat
    ```
 
 3. **Create a Branch**: Always create a new feature branch for your changes.
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -31,21 +33,25 @@ HeliaChat is a modern, responsive chat application built with React and Vite.
 4. **Make Changes**: Implement your changes following the coding standards.
 
 5. **Run Tests**: Ensure all tests pass before submitting.
+
    ```bash
    npm run test
    ```
 
 6. **Code Quality**: Run linting checks.
+
    ```bash
    npm run lint
    ```
 
 7. **Commit Changes**: Use descriptive commit messages.
+
    ```bash
    git commit -m "feat: add new feature"
    ```
 
 8. **Push Changes**: Push your branch to your forked repository.
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -147,12 +153,14 @@ src/
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd HeliaChat
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 # or
@@ -160,6 +168,7 @@ yarn
 ```
 
 3. Start the development server:
+
 ```bash
 npm run dev
 # or
@@ -181,6 +190,7 @@ yarn build
 ### Chat Sessions
 
 The application allows multiple chat sessions that are persisted in the browser's local storage. You can:
+
 - Create new chat sessions
 - Switch between existing sessions
 - Rename sessions

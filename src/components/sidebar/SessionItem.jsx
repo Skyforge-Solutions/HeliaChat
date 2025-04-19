@@ -2,29 +2,29 @@ import { useState, useRef, useEffect } from 'react';
 import { FiMessageSquare, FiMoreVertical } from 'react-icons/fi';
 import SessionDropdownMenu from './SessionDropdownMenu';
 
-export default function SessionItem({ 
-  session, 
-  currentSessionId, 
-  collapsed, 
-  switchSession, 
-  handleEditStart, 
-  handleEditSave, 
-  handleDeleteSession, 
+export default function SessionItem({
+  session,
+  currentSessionId,
+  collapsed,
+  switchSession,
+  handleEditStart,
+  handleEditSave,
+  handleDeleteSession,
   isEditing,
   editName,
   setEditName,
-  formatDate
+  formatDate,
 }) {
   const [openMenu, setOpenMenu] = useState(false);
   const dropdownRef = useRef();
 
-  const toggleMenu = (e) => {
+  const toggleMenu = e => {
     e.stopPropagation();
     setOpenMenu(!openMenu);
   };
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
+    const handleClickOutside = e => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setOpenMenu(false);
       }
@@ -39,7 +39,7 @@ export default function SessionItem({
     };
   }, [openMenu]);
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = e => {
     if (e.key === 'Enter') {
       handleEditSave(session.id);
       setOpenMenu(false); // Close the dropdown after rename
@@ -47,11 +47,11 @@ export default function SessionItem({
   };
 
   return (
-    <div 
+    <div
       ref={dropdownRef}
       className={`flex items-center justify-between rounded-md px-2 py-2 ${
-        currentSessionId === session.id 
-          ? 'bg-secondary' 
+        currentSessionId === session.id
+          ? 'bg-secondary'
           : 'hover:bg-secondary/50'
       }`}
     >
@@ -59,9 +59,9 @@ export default function SessionItem({
         <input
           type="text"
           value={editName}
-          onChange={(e) => setEditName(e.target.value)}
+          onChange={e => setEditName(e.target.value)}
           onBlur={() => handleEditSave(session.id)}
-          onKeyDown={(e) => handleKeyDown(e)}
+          onKeyDown={e => handleKeyDown(e)}
           className="bg-background border border-input rounded px-2 py-1 text-sm w-full text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
           autoFocus
         />
@@ -72,15 +72,19 @@ export default function SessionItem({
             onClick={() => switchSession(session.id)}
             title={collapsed ? session.name : ''}
           >
-            <FiMessageSquare className={`${collapsed ? 'mr-0' : 'mr-2'} flex-shrink-0 text-foreground`} />
+            <FiMessageSquare
+              className={`${collapsed ? 'mr-0' : 'mr-2'} flex-shrink-0 text-foreground`}
+            />
             {!collapsed && (
               <>
                 <span className="truncate text-foreground">{session.name}</span>
-                <span className="ml-2 text-xs text-muted-foreground">{formatDate(session.timestamp)}</span>
+                <span className="ml-2 text-xs text-muted-foreground">
+                  {formatDate(session.timestamp)}
+                </span>
               </>
             )}
           </button>
-          
+
           {!collapsed && (
             <button
               onClick={toggleMenu}
@@ -89,12 +93,12 @@ export default function SessionItem({
               <FiMoreVertical size={16} />
             </button>
           )}
-          
+
           {openMenu && !collapsed && (
-            <SessionDropdownMenu 
-              sessionId={session.id} 
-              sessionName={session.name} 
-              handleEditStart={handleEditStart} 
+            <SessionDropdownMenu
+              sessionId={session.id}
+              sessionName={session.name}
+              handleEditStart={handleEditStart}
               handleDeleteSession={handleDeleteSession}
             />
           )}

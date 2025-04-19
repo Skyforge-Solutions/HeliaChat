@@ -22,25 +22,25 @@ const defaultModels = [
     id: 'inner-dawn',
     name: 'Helia Inner Dawn',
     description: 'Mindfulness, calm parenting & relationship wellness',
-  }
+  },
 ];
 
-export default function ModelSelector({ 
+export default function ModelSelector({
   models = defaultModels,
   selectedModel,
   onModelSelect,
   isDisabled,
-  wrapperClass = ''
+  wrapperClass = '',
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
+
   const toggleMenu = () => {
     if (!isDisabled) {
       setIsMenuOpen(!isMenuOpen);
     }
   };
-  
-  const selectModel = (model) => {
+
+  const selectModel = model => {
     onModelSelect(model);
     setIsMenuOpen(false);
   };
@@ -56,23 +56,25 @@ export default function ModelSelector({
         >
           {selectedModel.name} <FiChevronDown className="ml-1" />
         </button>
-        
+
         {isMenuOpen && !isDisabled && (
           <div className="absolute left-0 bottom-full mb-1 w-56 origin-bottom-left rounded-md bg-card  shadow-lg ring-1 ring-border focus:outline-none z-10">
             <div className="py-1">
-              {models.map((model) => (
+              {models.map(model => (
                 <button
                   key={model.id}
                   type="button"
                   onClick={() => selectModel(model)}
                   className={`flex flex-col w-full text-left px-4 py-2 text-sm ${
-                    model.id === selectedModel.id 
-                      ? 'bg-accent text-accent-foreground' 
+                    model.id === selectedModel.id
+                      ? 'bg-accent text-accent-foreground'
                       : 'text-card-foreground hover:bg-secondary'
                   }`}
                 >
                   <span className="font-medium">{model.name}</span>
-                  <span className="text-xs text-muted-foreground">{model.description}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {model.description}
+                  </span>
                 </button>
               ))}
             </div>

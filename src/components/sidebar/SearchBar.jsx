@@ -11,7 +11,7 @@ export default function SearchBar({ searchQuery, setSearchQuery }) {
           type="text"
           placeholder="Search chats..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={e => setSearchQuery(e.target.value)}
           className="w-full pl-10 pr-3 py-2 rounded-md text-sm bg-secondary text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
         />
       </div>

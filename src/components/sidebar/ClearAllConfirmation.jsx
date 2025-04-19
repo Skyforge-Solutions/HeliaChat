@@ -4,7 +4,8 @@ export default function ClearAllConfirmation({ onClose, onConfirm }) {
       <div className="bg-background rounded-lg shadow-lg max-w-md w-full mx-4 p-6">
         <h3 className="text-lg font-medium text-foreground">Clear all chats</h3>
         <p className="mt-2 text-muted-foreground">
-          Are you sure you want to clear all your chat history? This action cannot be undone.
+          Are you sure you want to clear all your chat history? This action
+          cannot be undone.
         </p>
         <div className="mt-4 flex justify-end space-x-3">
           <button

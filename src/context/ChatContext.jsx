@@ -14,8 +14,8 @@ export function ChatProvider({ children }) {
         id: 'default-session',
         name: 'New Chat',
         timestamp: new Date().toISOString(),
-        messages: []
-      }
+        messages: [],
+      },
     ];
   });
 
@@ -24,17 +24,17 @@ export function ChatProvider({ children }) {
   });
 
   // Save sessions to localStorage whenever they change
-  const saveSessionsToStorage = (updatedSessions) => {
+  const saveSessionsToStorage = updatedSessions => {
     localStorage.setItem('chatSessions', JSON.stringify(updatedSessions));
   };
 
   // Add a new message to the current chat session
-  const addMessage = (message) => {
+  const addMessage = message => {
     const updatedSessions = sessions.map(session => {
       if (session.id === currentSessionId) {
         return {
           ...session,
-          messages: [...session.messages, message]
+          messages: [...session.messages, message],
         };
       }
       return session;
@@ -49,7 +49,7 @@ export function ChatProvider({ children }) {
       id: `session-${Date.now()}`,
       name: 'New Chat',
       timestamp: new Date().toISOString(),
-      messages: []
+      messages: [],
     };
     const updatedSessions = [newSession, ...sessions];
     setSessions(updatedSessions);
@@ -58,15 +58,17 @@ export function ChatProvider({ children }) {
   };
 
   // Switch to a different chat session
-  const switchSession = (sessionId) => {
+  const switchSession = sessionId => {
     setCurrentSessionId(sessionId);
   };
 
   // Delete a chat session
-  const deleteSession = (sessionId) => {
-    const updatedSessions = sessions.filter(session => session.id !== sessionId);
+  const deleteSession = sessionId => {
+    const updatedSessions = sessions.filter(
+      session => session.id !== sessionId
+    );
     setSessions(updatedSessions);
-    
+
     // If the current session is deleted, switch to the first available session
     if (sessionId === currentSessionId && updatedSessions.length > 0) {
       setCurrentSessionId(updatedSessions[0].id);
@@ -74,7 +76,7 @@ export function ChatProvider({ children }) {
       // If no sessions remain, create a new one
       createNewSession();
     }
-    
+
     saveSessionsToStorage(updatedSessions);
   };
 
@@ -84,7 +86,7 @@ export function ChatProvider({ children }) {
       if (session.id === sessionId) {
         return {
           ...session,
-          name: newName
+          name: newName,
         };
       }
       return session;
@@ -99,7 +101,7 @@ export function ChatProvider({ children }) {
       id: `session-${Date.now()}`,
       name: 'New Chat',
       timestamp: new Date().toISOString(),
-      messages: []
+      messages: [],
     };
     setSessions([newSession]);
     setCurrentSessionId(newSession.id);
@@ -107,20 +109,23 @@ export function ChatProvider({ children }) {
   };
 
   // Get the current chat session
-  const currentSession = sessions.find(session => session.id === currentSessionId) || null;
+  const currentSession =
+    sessions.find(session => session.id === currentSessionId) || null;
 
   return (
-    <ChatContext.Provider value={{
-      sessions,
-      currentSession,
-      currentSessionId,
-      switchSession,
-      createNewSession,
-      addMessage,
-      deleteSession,
-      renameSession,
-      clearAllSessions
-    }}>
+    <ChatContext.Provider
+      value={{
+        sessions,
+        currentSession,
+        currentSessionId,
+        switchSession,
+        createNewSession,
+        addMessage,
+        deleteSession,
+        renameSession,
+        clearAllSessions,
+      }}
+    >
       {children}
     </ChatContext.Provider>
   );

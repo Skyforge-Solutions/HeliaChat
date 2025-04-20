@@ -7,7 +7,15 @@ import SessionItem from '../sidebar/SessionItem';
 import ClearAllConfirmation from '../sidebar/ClearAllConfirmation';
 
 export default function Sidebar({ collapsed }) {
-  const { sessions, currentSessionId, switchSession, createNewSession, deleteSession, renameSession, clearAllSessions } = useChat();
+  const {
+    sessions,
+    currentSessionId,
+    switchSession,
+    createNewSession,
+    deleteSession,
+    renameSession,
+    clearAllSessions,
+  } = useChat();
   const [isEditing, setIsEditing] = useState(null);
   const [editName, setEditName] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -20,7 +28,7 @@ export default function Sidebar({ collapsed }) {
     setEditName(name);
   };
 
-  const handleEditSave = (id) => {
+  const handleEditSave = id => {
     if (editName.trim()) {
       renameSession(id, editName);
     }
@@ -32,11 +40,11 @@ export default function Sidebar({ collapsed }) {
     deleteSession(id);
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = dateString => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', {
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     }).format(date);
   };
 
@@ -50,27 +58,38 @@ export default function Sidebar({ collapsed }) {
   };
 
   // Filter sessions based on search query
-  const filteredSessions = sessions.filter(session => 
+  const filteredSessions = sessions.filter(session =>
     session.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <>
       {/* Mobile menu button - now as a component */}
-      <MobileMenuButton 
-        isMobileMenuOpen={isMobileMenuOpen} 
-        toggleMobileMenu={toggleMobileMenu} 
+      <MobileMenuButton
+        isMobileMenuOpen={isMobileMenuOpen}
+        toggleMobileMenu={toggleMobileMenu}
       />
 
       {/* Sidebar */}
-      <div className={`fixed top-12 left-0 h-[calc(100vh-48px)] ${collapsed ? 'w-16' : 'w-64'} bg-white dark:bg-gray-900 transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} transition-all duration-300 ease-in-out md:relative z-10 pt-4 pb-4 flex flex-col`}>
+      <div
+        className={`fixed top-12 left-0 h-[calc(100vh-48px)] ${
+          collapsed ? 'w-16' : 'w-64'
+        } bg-background transform ${
+          isMobileMenuOpen
+            ? 'translate-x-0'
+            : '-translate-x-full md:translate-x-0'
+        }  ease-in-out md:relative z-10 pt-4 pb-4 flex flex-col`}
+      >
         <div className={`px-2 py-2 ${collapsed ? 'flex justify-center' : ''}`}>
-          <button 
+          <button
             onClick={createNewSession}
-            className={`${collapsed ? 'p-2' : 'w-full'} flex items-center justify-center gap-2 px-4 py-2 bg-primary-light dark:bg-primary-dark text-black rounded-md hover:opacity-90 transition-opacity shadow-sm`}
+            className={`${
+              collapsed ? 'p-2' : 'w-full'
+            } flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity shadow-sm`}
             title="New Chat"
           >
-            <FiPlus size={16} /> {!collapsed && <span className="font-medium">New Chat</span>}
+            <FiPlus size={16} />{' '}
+            {!collapsed && <span className="font-medium">New Chat</span>}
           </button>
         </div>
 
@@ -83,9 +102,13 @@ export default function Sidebar({ collapsed }) {
         )}
 
         <div className="flex-1 overflow-y-auto px-2">
-          {!collapsed && <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400 px-2 py-2">Chat History</h2>}
+          {!collapsed && (
+            <h2 className="text-sm font-medium text-muted-foreground px-2 py-2">
+              Chat History
+            </h2>
+          )}
           <ul className="space-y-1">
-            {filteredSessions.map((session) => (
+            {filteredSessions.map(session => (
               <li key={session.id} className="relative">
                 <SessionItem
                   session={session}
@@ -104,14 +127,14 @@ export default function Sidebar({ collapsed }) {
             ))}
           </ul>
         </div>
-        
+
         {/* Footer section - hidden when collapsed */}
         {!collapsed && (
-          <div className="mt-auto px-4 py-2 text-xs text-gray-500 dark:text-gray-400">
+          <div className="mt-auto px-4 py-2 text-xs text-muted-foreground">
             <div className="pt-2">
-              <button 
+              <button
                 onClick={() => setShowClearConfirm(true)}
-                className="w-full text-left py-1 px-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-red-600 dark:text-red-400"
+                className="w-full text-left py-1 px-2 rounded hover:bg-secondary transition-colors text-destructive"
               >
                 <span>Clear all chats</span>
               </button>
@@ -119,12 +142,12 @@ export default function Sidebar({ collapsed }) {
           </div>
         )}
       </div>
-      
+
       {/* Clear all chats confirmation modal - now as a component */}
       {showClearConfirm && (
-        <ClearAllConfirmation 
-          onClose={() => setShowClearConfirm(false)} 
-          onConfirm={handleClearAllSessions} 
+        <ClearAllConfirmation
+          onClose={() => setShowClearConfirm(false)}
+          onConfirm={handleClearAllSessions}
         />
       )}
     </>

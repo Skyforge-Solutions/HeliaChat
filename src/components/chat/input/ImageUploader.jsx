@@ -2,7 +2,6 @@ import { useRef } from 'react';
 import { FiImage, FiPlus } from 'react-icons/fi';
 
 export default function ImageUploader({ 
-  selectedFile,
   imagePreview, 
   onFileChange, 
   onRemoveImage,

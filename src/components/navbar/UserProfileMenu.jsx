@@ -8,7 +8,7 @@ import {
   FiSettings,
 } from 'react-icons/fi';
 
-export default function UserProfileMenu({ user, onOpenUserSettings }) {
+export default function UserProfileMenu({ user, onOpenUserSettings, onLogout }) {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
 
@@ -41,6 +41,13 @@ export default function UserProfileMenu({ user, onOpenUserSettings }) {
     e.stopPropagation(); // Stop propagation to prevent closing the menu
     onOpenUserSettings();
     setIsProfileMenuOpen(false);
+  };
+
+  const handleLogout = e => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsProfileMenuOpen(false);
+    if (onLogout) onLogout();
   };
 
   return (
@@ -112,6 +119,7 @@ export default function UserProfileMenu({ user, onOpenUserSettings }) {
 
             <div className="py-1">
               <button
+                onClick={handleLogout}
                 type="button"
                 className="flex items-center w-full px-4 py-2 text-sm text-foreground hover:bg-secondary"
               >

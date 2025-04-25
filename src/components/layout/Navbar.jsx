@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { FiCreditCard } from 'react-icons/fi';
+import { FiCreditCard, FiLogOut } from 'react-icons/fi';
 import ThemeSwitcher from '../navbar/ThemeSwitcher';
 import UserProfileMenu from '../navbar/UserProfileMenu';
 import UserSettingsForm from '../navbar/UserSettingsForm';
 import logo from '../../assets/logo.svg';
 
-export default function Navbar() {
+export default function Navbar({ user = {}, onLogout }) {
   const [showUserDataForm, setShowUserDataForm] = useState(false);
 
   // Initialize user data from localStorage if available
@@ -24,7 +24,7 @@ export default function Navbar() {
 
   function getDefaultUserData() {
     return {
-      name: '',
+      name: user?.name || '',
       age: '',
       occupation: '',
       tone_preference: 'casual',
@@ -34,14 +34,6 @@ export default function Navbar() {
       children: [],
     };
   }
-
-  // Mock user data - would come from user context in a real app
-  const user = {
-    name: userData.name || 'User',
-    credits: 100,
-    subscriptionType: 'Free',
-    language: 'English',
-  };
 
   const handleOpenUserSettings = () => {
     setShowUserDataForm(true);
@@ -72,6 +64,15 @@ export default function Navbar() {
     return () => window.removeEventListener('keydown', handleEscape);
   }, [showUserDataForm]);
 
+  // Update UserProfileMenu to pass onLogout
+  const userWithDefaults = {
+    name: user?.name || 'User',
+    email: user?.email || '',
+    credits: user?.credits || 0,
+    subscriptionType: user?.subscriptionType || 'Free',
+    language: user?.language || 'English',
+  };
+
   return (
     <>
       <nav className="fixed top-0 w-full bg-background px-4 py-2 z-10">
@@ -83,13 +84,14 @@ export default function Navbar() {
           <div className="flex items-center space-x-4">
             <div className="text-sm text-muted-foreground hidden sm:flex items-center">
               <FiCreditCard className="mr-1" />
-              <span>{user.credits} credits</span>
+              <span>{userWithDefaults.credits} credits</span>
             </div>
 
             <ThemeSwitcher />
             <UserProfileMenu
-              user={user}
+              user={userWithDefaults}
               onOpenUserSettings={handleOpenUserSettings}
+              onLogout={onLogout}
             />
           </div>
         </div>

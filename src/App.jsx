@@ -65,7 +65,7 @@ function App() {
               element={
                 isAuthenticated ? 
                 <Navigate to="/" /> : 
-                <Signup onSignup={handleSignup} />
+                <Signup  />
               } 
             />
             <Route 

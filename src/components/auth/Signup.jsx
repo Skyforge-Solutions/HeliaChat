@@ -95,7 +95,7 @@ export default function Signup({ onSignup }) {
       navigate('/login');
       
       // Call the onSignup callback
-      if (onSignup) onSignup(userData);
+    //   if (onSignup) onSignup(userData);
       
     } catch (err) {
       setError(err.message || 'Failed to create account. Please try again.');

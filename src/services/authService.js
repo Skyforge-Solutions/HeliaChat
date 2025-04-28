@@ -45,6 +45,34 @@ export const login = async (email, password) => {
   return data;
 };
 
+// Logout user
+export const logout = async () => {
+  // Get token from localStorage
+  const token = JSON.parse(localStorage.getItem('heliaUser'))?.token;
+  
+  if (token) {
+    try {
+      const response = await fetch(`${API_URL}/api/auth/logout`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        const data = await response.json();
+        console.error('Logout error:', data.detail || 'Logout failed on server');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  }
+  
+  // Even if the server request fails, we should clear local storage
+  return true;
+};
+
 // Get current user profile
 export const getProfile = async () => {
   // Get token from localStorage

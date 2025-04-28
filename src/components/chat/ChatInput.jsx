@@ -4,7 +4,7 @@ import ModelSelector from './input/ModelSelector';
 import ImageUploader from './input/ImageUploader';
 import MessageInput from './input/MessageInput';
 
-export default function ChatInput({ onSendMessage, isDisabled }) {
+export default function ChatInput({ onSendMessage, isDisabled, placeholder }) {
   const [message, setMessage] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -36,7 +36,7 @@ export default function ChatInput({ onSendMessage, isDisabled }) {
   const handleSubmit = e => {
     e.preventDefault();
     if ((message.trim() || selectedFile) && !isDisabled) {
-      onSendMessage(message, selectedFile);
+      onSendMessage(message, selectedFile, selectedModel.id);
       setMessage('');
       setSelectedFile(null);
       setImagePreview(null);
@@ -47,6 +47,10 @@ export default function ChatInput({ onSendMessage, isDisabled }) {
     if (e.key === 'Enter' && !e.shiftKey && !isDisabled) {
       e.preventDefault();
       handleSubmit(e);
+    }
+    // Allow Shift+Enter for new lines
+    if (e.key === 'Enter' && e.shiftKey) {
+      // Let the default behavior happen (new line)
     }
   };
 
@@ -92,9 +96,9 @@ export default function ChatInput({ onSendMessage, isDisabled }) {
 
         {/* input bar  */}
         <div
-          className="flex items-center w-full bg-secondary rounded-xl
+          className={`flex items-center w-full bg-secondary rounded-xl
                 px-3 gap-2 focus-within:ring-2
-                focus-within:ring-primary"
+                focus-within:ring-primary ${isDisabled ? 'opacity-70' : ''}`}
         >
           {/* + icon */}
           <ImageUploader
@@ -119,6 +123,7 @@ export default function ChatInput({ onSendMessage, isDisabled }) {
             onKeyDown={handleKeyDown}
             isDisabled={isDisabled}
             extraClass="flex-1 bg-transparent py-3"
+            placeholder={placeholder || "Send a message..."}
           />
 
           {/* send arrow */}
@@ -131,10 +136,22 @@ export default function ChatInput({ onSendMessage, isDisabled }) {
           </button>
         </div>
 
-        {isDisabled && (
-          <p className="mt-2 text-center text-sm text-destructive animate-pulse">
-            AI is responding…
-          </p>
+
+        {isDisabled ? (
+          <div className="mt-2 flex items-center justify-center gap-2 h-6">
+            <div className="flex space-x-1">
+              <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }}></div>
+              <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '150ms' }}></div>
+              <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }}></div>
+            </div>
+            <p className="text-sm text-primary">
+              {placeholder || "AI is responding..."}
+            </p>
+          </div>
+        ) : (
+          <div className="mt-2  text-xs text-muted-foreground text-center h-6">
+            Press Enter to send, Shift+Enter for new line
+          </div>
         )}
       </form>
     </div>

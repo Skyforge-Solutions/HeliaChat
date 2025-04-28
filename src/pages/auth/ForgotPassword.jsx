@@ -2,167 +2,146 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../services/api/ApiClient';
+import { FiMail } from 'react-icons/fi';
+import logo from '../../assets/logo.svg';
 
 const ForgotPassword = () => {
 	const [email, setEmail] = useState('');
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState('');
 	const [success, setSuccess] = useState(false);
 	const navigate = useNavigate();
 
-	const handleSubmit = async (e) => {
+	// Use the React Query mutation
+	const {
+		mutate: requestReset,
+		isPending,
+		error,
+	} = apiClient.auth.useRequestPasswordReset({
+		onSuccess: () => setSuccess(true),
+	});
+
+	const handleSubmit = (e) => {
 		e.preventDefault();
-		setIsLoading(true);
-		setError('');
 		setSuccess(false);
-
-		try {
-			const response = await fetch(
-				`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/auth'}/api/auth/password-reset/request`,
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({ email }),
-				}
-			);
-
-			if (!response.ok) {
-				throw new Error('Failed to send reset link');
-			}
-
-			setSuccess(true);
-		} catch (err) {
-			setError(err.message || 'An error occurred while sending the reset link');
-		} finally {
-			setIsLoading(false);
-		}
+		requestReset(email);
 	};
 
 	return (
-		<div className='min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8'>
-			<div className='max-w-md w-full space-y-8'>
-				<div>
-					<h2 className='mt-6 text-center text-3xl font-extrabold text-gray-900'>
-						Reset your password
-					</h2>
-					<p className='mt-2 text-center text-sm text-gray-600'>
+		<div className='min-h-screen flex items-center justify-center bg-background p-4'>
+			<div className='w-full max-w-md'>
+				<div className='text-center mb-8'>
+					<img
+						src={logo}
+						alt='HeliaChat Logo'
+						className='h-12 mx-auto mb-4'
+					/>
+					<h1 className='text-2xl font-bold text-foreground'>Reset your password</h1>
+					<p className='text-muted-foreground mt-2'>
 						Enter your email address and we'll send you a link to reset your password.
 					</p>
 				</div>
 
 				{success ? (
-					<div className='rounded-md bg-green-50 p-4'>
-						<div className='flex'>
-							<div className='flex-shrink-0'>
-								<svg
-									className='h-5 w-5 text-green-400'
-									viewBox='0 0 20 20'
-									fill='currentColor'
-								>
-									<path
-										fillRule='evenodd'
-										d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z'
-										clipRule='evenodd'
-									/>
-								</svg>
-							</div>
-							<div className='ml-3'>
-								<p className='text-sm font-medium text-green-800'>
-									If that email exists, a reset link was sent. Please check your inbox.
-								</p>
-							</div>
-						</div>
+					<div className='bg-green-100 border border-green-400 text-green-700 font-medium px-4 py-3 rounded-md mb-4 flex items-center'>
+						<svg
+							className='h-5 w-5 text-green-500 mr-2'
+							viewBox='0 0 20 20'
+							fill='currentColor'
+						>
+							<path
+								fillRule='evenodd'
+								d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z'
+								clipRule='evenodd'
+							/>
+						</svg>
+						<p>
+							If that email exists, a reset link was sent. Please check your inbox.
+						</p>
 					</div>
 				) : (
 					<form
-						className='mt-8 space-y-6'
 						onSubmit={handleSubmit}
+						className='space-y-4'
 					>
-						<div className='rounded-md shadow-sm -space-y-px'>
-							<div>
-								<label
-									htmlFor='email-address'
-									className='sr-only'
-								>
-									Email address
-								</label>
-								<input
-									id='email-address'
-									name='email'
-									type='email'
-									autoComplete='email'
-									required
-									className='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm'
-									placeholder='Email address'
-									value={email}
-									onChange={(e) => setEmail(e.target.value)}
-								/>
-							</div>
-						</div>
-
 						{error && (
-							<div className='rounded-md bg-red-50 p-4'>
-								<div className='flex'>
-									<div className='flex-shrink-0'>
-										<svg
-											className='h-5 w-5 text-red-400'
-											viewBox='0 0 20 20'
-											fill='currentColor'
-										>
-											<path
-												fillRule='evenodd'
-												d='M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z'
-												clipRule='evenodd'
-											/>
-										</svg>
-									</div>
-									<div className='ml-3'>
-										<p className='text-sm font-medium text-red-800'>{error}</p>
-									</div>
-								</div>
+							<div className='bg-destructive/20 border border-destructive text-destructive font-medium px-4 py-3 rounded-md mb-4 dark:bg-destructive/30 dark:border-red-500 dark:text-red-400 flex items-center'>
+								<svg
+									xmlns='http://www.w3.org/2000/svg'
+									width='20'
+									height='20'
+									viewBox='0 0 24 24'
+									fill='none'
+									stroke='currentColor'
+									strokeWidth='2'
+									strokeLinecap='round'
+									strokeLinejoin='round'
+									className='mr-2'
+								>
+									<circle
+										cx='12'
+										cy='12'
+										r='10'
+									></circle>
+									<line
+										x1='12'
+										y1='8'
+										x2='12'
+										y2='12'
+									></line>
+									<line
+										x1='12'
+										y1='16'
+										x2='12.01'
+										y2='16'
+									></line>
+								</svg>
+								{error?.response?.data?.message ||
+									error.message ||
+									'An error occurred while sending the reset link'}
 							</div>
 						)}
 
 						<div>
+							<label
+								htmlFor='email'
+								className='block text-sm font-medium text-foreground mb-1'
+							>
+								Email
+							</label>
+							<div className='relative'>
+								<div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+									<FiMail className='text-muted-foreground' />
+								</div>
+								<input
+									id='email'
+									name='email'
+									type='email'
+									autoComplete='email'
+									required
+									className='block w-full pl-10 pr-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary'
+									placeholder='you@example.com'
+									value={email}
+									onChange={(e) => setEmail(e.target.value)}
+									disabled={isPending}
+								/>
+							</div>
+						</div>
+
+						<div>
 							<button
 								type='submit'
-								disabled={isLoading}
-								className='group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary'
+								disabled={isPending}
+								className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary ${
+									isPending ? 'opacity-70 cursor-not-allowed' : ''
+								}`}
 							>
-								{isLoading ? (
-									<span className='absolute left-0 inset-y-0 flex items-center pl-3'>
-										<svg
-											className='animate-spin h-5 w-5 text-white'
-											xmlns='http://www.w3.org/2000/svg'
-											fill='none'
-											viewBox='0 0 24 24'
-										>
-											<circle
-												className='opacity-25'
-												cx='12'
-												cy='12'
-												r='10'
-												stroke='currentColor'
-												strokeWidth='4'
-											></circle>
-											<path
-												className='opacity-75'
-												fill='currentColor'
-												d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
-											></path>
-										</svg>
-									</span>
-								) : null}
-								Send Reset Link
+								{isPending ? 'Sending...' : 'Send Reset Link'}
 							</button>
 						</div>
 
-						<div className='text-sm text-center'>
+						<div className='text-center mt-4'>
 							<Link
 								to='/login'
-								className='font-medium text-primary hover:text-primary-dark'
+								className='font-medium text-primary hover:text-primary'
 							>
 								Back to Login
 							</Link>

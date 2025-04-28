@@ -15,11 +15,12 @@ import AuthLayout from './components/layout/AuthLayout';
 import HomePage from './components/home/HomePage';
 import ChatPage from './components/chat/ChatPage';
 import { PendingMessageProvider } from './context/PendingMessageContext';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
 
 function App() {
 	return (
 		<ThemeProvider>
-
 			<AuthProvider>
 				<PendingMessageProvider>
 					<Router>
@@ -33,6 +34,14 @@ function App() {
 								<Route
 									path='/signup'
 									element={<Signup />}
+								/>
+								<Route
+									path='/forgot-password'
+									element={<ForgotPassword />}
+								/>
+								<Route
+									path='/reset-password'
+									element={<ResetPassword />}
 								/>
 							</Route>
 

@@ -1,4 +1,5 @@
 import HttpClient from './HttpClient';
+import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/auth';
 import { useQuery, useMutation, useQueryClient, experimental_streamedQuery } from '@tanstack/react-query';
@@ -71,11 +72,36 @@ class ApiClient {
         ...options,
       });
     },
+
+    // Request password reset
+    useRequestPasswordReset: (options = {}) => {
+      return useMutation({
+        mutationFn: async (email) => {
+          const response = await this.publicClient.post('/api/auth/password-reset/request', { email });
+          return response.data;
+        },
+        ...options,
+      });
+    },
+
+    // Verify password reset token and set new password
+    useVerifyPasswordReset: (options = {}) => {
+      return useMutation({
+        mutationFn: async ({ token, newPassword }) => {
+          const response = await this.publicClient.post('/api/auth/password-reset/verify', {
+            token,
+            new_password: newPassword,
+          });
+          return response.data;
+        },
+        ...options,
+      });
+    },
   };
 
   // Chat related hooks
   chat = {
-    
+
 
     // Get all chat sessions
     useGetSessions: (options = {}) => {
@@ -163,7 +189,7 @@ class ApiClient {
           return response.data;
         },
         enabled: !!chatId,
-      
+
         ...options,
       });
     },

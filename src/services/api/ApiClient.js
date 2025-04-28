@@ -97,6 +97,47 @@ class ApiClient {
         ...options,
       });
     },
+
+    // Update user password
+    useUpdatePassword: (options = {}) => {
+      return useMutation({
+        mutationFn: async ({ currentPassword, newPassword }) => {
+          const response = await this.authClient.patch('/api/auth/password', {
+            current_password: currentPassword,
+            new_password: newPassword,
+          });
+          return response.data;
+        },
+        ...options,
+      });
+    },
+
+    // Request email change (Step 1)
+    useRequestEmailChange: (options = {}) => {
+      return useMutation({
+        mutationFn: async ({ newEmail, currentPassword }) => {
+          const response = await this.authClient.post('/api/auth/email/request', {
+            new_email: newEmail,
+            current_password: currentPassword,
+          });
+          return response.data;
+        },
+        ...options,
+      });
+    },
+
+    // Verify email change with OTP (Step 2)
+    useVerifyEmailChange: (options = {}) => {
+      return useMutation({
+        mutationFn: async (otp) => {
+          const response = await this.authClient.post('/api/auth/email/verify', {
+            otp,
+          });
+          return response.data;
+        },
+        ...options,
+      });
+    },
   };
 
   // Chat related hooks

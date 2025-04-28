@@ -6,11 +6,13 @@ import { useParams } from 'react-router-dom';
 import apiClient from '../../services/api/ApiClient';
 import { usePendingMessage } from '../../context/PendingMessageContext';
 import { useChatMessage } from '../../hooks/useChatMessage';
+import ChatSkeleton from '../shared/ChatSkeleton';
 
 const ChatArea = ({ sidebarCollapsed }) => {
 	const { chatId } = useParams();
 	const messagesEndRef = useRef(null);
-	const { pendingMessage, clearPendingMessage } = usePendingMessage();
+	const { pendingMessage, clearPendingMessage, } = usePendingMessage();
+	
 	const pendingMessageProcessedRef = useRef(false);
 
 	const {
@@ -27,7 +29,7 @@ const ChatArea = ({ sidebarCollapsed }) => {
 	const { data: fetchedChatHistory, isLoading: historyLoading } = apiClient.chat.useGetHistory(
 		chatId,
 		{
-			enabled: !!chatId && chatId !== 'new' && !pendingMessage,
+			enabled: !!chatId && chatId !== 'new' && !!!pendingMessage,
 		}
 	);
 
@@ -57,7 +59,18 @@ const ChatArea = ({ sidebarCollapsed }) => {
 		if (pendingMessage && chatId && !pendingMessageProcessedRef.current) {
 			// Set the ref to true to prevent duplicate processing
 			pendingMessageProcessedRef.current = true;
-			
+
+			// Add the pending message to chat history first
+			setChatHistory(prev => [
+				...prev,
+				{
+					id: `pending-${Date.now()}`,
+					role: 'user',
+					content: pendingMessage.content,
+					timestamp: new Date().toISOString(),
+				}
+			]);
+
 			// Send the pending message to the server
 			sendMessage({
 				sessionId: chatId,
@@ -69,7 +82,7 @@ const ChatArea = ({ sidebarCollapsed }) => {
 			// Clear the pending message after sending
 			clearPendingMessage();
 		}
-	}, [pendingMessage, chatId, sendMessage, clearPendingMessage]);
+	}, [pendingMessage, chatId, sendMessage, clearPendingMessage, setChatHistory]);
 
 	// Reset the ref when chatId changes
 	useEffect(() => {
@@ -89,14 +102,9 @@ const ChatArea = ({ sidebarCollapsed }) => {
 		<div className='flex flex-col h-full bg-background'>
 			<div className='flex-1 overflow-y-auto pt-14 pb-20'>
 				{historyLoading ? (
-					<div className='flex justify-center items-center h-full text-primary gap-3'>
-						<p className='flex items-center'>
-							<span className='animate-spin '>⟳</span>
-							Loading messages...
-						</p>
-					</div>
+					<ChatSkeleton />
 				) : chatHistory?.length === 0 ? (
-					<Welcome />
+					!isAiResponding && <Welcome />
 				) : (
 					<>
 						{chatHistory?.map((message) => (

@@ -2,69 +2,34 @@ import { useState, useEffect } from 'react';
 import { FiCreditCard, FiLogOut } from 'react-icons/fi';
 import ThemeSwitcher from '../navbar/ThemeSwitcher';
 import UserProfileMenu from '../navbar/UserProfileMenu';
-import UserSettingsForm from '../navbar/UserSettingsForm';
+import SettingsModal from '../settings/SettingsModal';
 import { useAuth } from '../../context/AuthContext';
 import logo from '../../assets/logo.svg';
+import apiClient from '../../services/api/ApiClient';
 
 export default function Navbar() {
 	const { user, logout } = useAuth();
-	const [showUserDataForm, setShowUserDataForm] = useState(false);
+	const [showSettingsModal, setShowSettingsModal] = useState(false);
 
-	// Initialize user data from localStorage if available
-	const [userData, setUserData] = useState(() => {
-		const savedUserData = localStorage.getItem('heliaUserData');
-		if (savedUserData) {
-			try {
-				return JSON.parse(savedUserData);
-			} catch (e) {
-				console.error('Error parsing user data:', e);
-				return getDefaultUserData();
-			}
-		}
-		return getDefaultUserData();
-	});
-
-	function getDefaultUserData() {
-		return {
-			name: user?.name || '',
-			age: '',
-			occupation: '',
-			tone_preference: 'casual',
-			tech_familiarity: 'moderate',
-			parent_type: '',
-			time_with_kids: '2',
-			children: [],
-		};
-	}
-
-	const handleOpenUserSettings = () => {
-		setShowUserDataForm(true);
+	const handleOpenSettings = () => {
+		setShowSettingsModal(true);
 	};
 
-	const handleCloseUserSettings = () => {
-		setShowUserDataForm(false);
-		// Refresh user data from localStorage if it was updated
-		const savedUserData = localStorage.getItem('heliaUserData');
-		if (savedUserData) {
-			try {
-				setUserData(JSON.parse(savedUserData));
-			} catch (e) {
-				console.error('Error parsing user data:', e);
-			}
-		}
+	const handleCloseSettings = () => {
+		setShowSettingsModal(false);
 	};
 
-	// Close user data form on escape key
+	// Close settings modal on escape key
 	useEffect(() => {
 		const handleEscape = (e) => {
-			if (e.key === 'Escape' && showUserDataForm) {
-				setShowUserDataForm(false);
+			if (e.key === 'Escape' && showSettingsModal) {
+				setShowSettingsModal(false);
 			}
 		};
 
 		window.addEventListener('keydown', handleEscape);
 		return () => window.removeEventListener('keydown', handleEscape);
-	}, [showUserDataForm]);
+	}, [showSettingsModal]);
 
 	// Update UserProfileMenu to pass onLogout
 	const userWithDefaults = {
@@ -96,18 +61,17 @@ export default function Navbar() {
 						<ThemeSwitcher />
 						<UserProfileMenu
 							user={userWithDefaults}
-							onOpenUserSettings={handleOpenUserSettings}
+							onOpenUserSettings={handleOpenSettings}
 							onLogout={logout}
 						/>
 					</div>
 				</div>
 			</nav>
 
-			{/* User Settings Form */}
-			{showUserDataForm && (
-				<UserSettingsForm
-					onClose={handleCloseUserSettings}
-					initialData={userData}
+			{/* Settings Modal */}
+			{showSettingsModal && (
+				<SettingsModal
+					onClose={handleCloseSettings}
 				/>
 			)}
 		</>

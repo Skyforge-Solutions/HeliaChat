@@ -12,6 +12,7 @@ const ResetPassword = () => {
 	const [searchParams] = useSearchParams();
 	const navigate = useNavigate();
 	const token = searchParams.get('token');
+	console.log(token);
 	const [localError, setLocalError] = useState('');
 
 	// Use the React Query mutation

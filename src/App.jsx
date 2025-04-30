@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
+import { SignupProvider } from './context/SignupContext';
 
 // Auth components
 import Login from './components/auth/Login';
@@ -22,56 +23,58 @@ function App() {
 	return (
 		<ThemeProvider>
 			<AuthProvider>
-				<PendingMessageProvider>
-					<Router>
-						<Routes>
-							{/* Auth routes */}
-							<Route element={<AuthLayout />}>
-								<Route
-									path='/login'
-									element={<Login />}
-								/>
-								<Route
-									path='/signup'
-									element={<Signup />}
-								/>
-								<Route
-									path='/forgot-password'
-									element={<ForgotPassword />}
-								/>
-								<Route
-									path='/reset-password'
-									element={<ResetPassword />}
-								/>
-							</Route>
-
-							{/* Protected routes */}
-							<Route element={<ProtectedRoute />}>
-								<Route element={<MainLayout />}>
+				<SignupProvider>
+					<PendingMessageProvider>
+						<Router>
+							<Routes>
+								{/* Auth routes */}
+								<Route element={<AuthLayout />}>
 									<Route
-										path='/'
-										element={<HomePage />}
+										path='/login'
+										element={<Login />}
 									/>
 									<Route
-										path='/chat/:chatId'
-										element={<ChatPage />}
+										path='/signup'
+										element={<Signup />}
+									/>
+									<Route
+										path='/forgot-password'
+										element={<ForgotPassword />}
+									/>
+									<Route
+										path='/reset-password'
+										element={<ResetPassword />}
 									/>
 								</Route>
-							</Route>
 
-							{/* Fallback route */}
-							<Route
-								path='*'
-								element={
-									<Navigate
-										to='/'
-										replace
-									/>
-								}
-							/>
-						</Routes>
-					</Router>
-				</PendingMessageProvider>
+								{/* Protected routes */}
+								<Route element={<ProtectedRoute />}>
+									<Route element={<MainLayout />}>
+										<Route
+											path='/'
+											element={<HomePage />}
+										/>
+										<Route
+											path='/chat/:chatId'
+											element={<ChatPage />}
+										/>
+									</Route>
+								</Route>
+
+								{/* Fallback route */}
+								<Route
+									path='*'
+									element={
+										<Navigate
+											to='/'
+											replace
+										/>
+									}
+								/>
+							</Routes>
+						</Router>
+					</PendingMessageProvider>
+				</SignupProvider>
 			</AuthProvider>
 		</ThemeProvider>
 	);

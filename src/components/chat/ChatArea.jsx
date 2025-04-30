@@ -11,8 +11,8 @@ import ChatSkeleton from '../shared/ChatSkeleton';
 const ChatArea = ({ sidebarCollapsed }) => {
 	const { chatId } = useParams();
 	const messagesEndRef = useRef(null);
-	const { pendingMessage, clearPendingMessage, } = usePendingMessage();
-	
+	const { pendingMessage, clearPendingMessage } = usePendingMessage();
+
 	const pendingMessageProcessedRef = useRef(false);
 
 	const {
@@ -61,14 +61,14 @@ const ChatArea = ({ sidebarCollapsed }) => {
 			pendingMessageProcessedRef.current = true;
 
 			// Add the pending message to chat history first
-			setChatHistory(prev => [
+			setChatHistory((prev) => [
 				...prev,
 				{
 					id: `pending-${Date.now()}`,
 					role: 'user',
 					content: pendingMessage.content,
 					timestamp: new Date().toISOString(),
-				}
+				},
 			]);
 
 			// Send the pending message to the server

@@ -11,13 +11,13 @@ export const register = async (userData) => {
     },
     body: JSON.stringify(userData),
   });
-  
+
   const data = await response.json();
-  
+
   if (!response.ok) {
     throw new Error(data.detail || 'Registration failed');
   }
-  
+
   return data;
 };
 
@@ -27,7 +27,7 @@ export const login = async (email, password) => {
   const formData = new URLSearchParams();
   formData.append('username', email);
   formData.append('password', password);
-  
+
   const response = await fetch(`${API_URL}/api/auth/token`, {
     method: 'POST',
     headers: {
@@ -35,13 +35,13 @@ export const login = async (email, password) => {
     },
     body: formData.toString(),
   });
-  
+
   const data = await response.json();
-  
+
   if (!response.ok) {
     throw new Error(data.detail || 'Login failed');
   }
-  
+
   return data;
 };
 
@@ -49,7 +49,7 @@ export const login = async (email, password) => {
 export const logout = async () => {
   // Get token from localStorage
   const token = JSON.parse(localStorage.getItem('heliaUser'))?.token;
-  
+
   if (token) {
     try {
       const response = await fetch(`${API_URL}/api/auth/logout`, {
@@ -59,7 +59,7 @@ export const logout = async () => {
           'Content-Type': 'application/json',
         },
       });
-      
+
       if (!response.ok) {
         const data = await response.json();
         console.error('Logout error:', data.detail || 'Logout failed on server');
@@ -68,7 +68,7 @@ export const logout = async () => {
       console.error('Logout error:', error);
     }
   }
-  
+
   // Even if the server request fails, we should clear local storage
   return true;
 };
@@ -77,22 +77,46 @@ export const logout = async () => {
 export const getProfile = async () => {
   // Get token from localStorage
   const token = JSON.parse(localStorage.getItem('heliaUser'))?.token;
-  
+
   if (!token) {
     throw new Error('No authentication token found');
   }
-  
+
   const response = await fetch(`${API_URL}/api/auth/me`, {
     headers: {
       'Authorization': `Bearer ${token}`,
     },
   });
-  
+
   const data = await response.json();
-  
+
   if (!response.ok) {
     throw new Error(data.detail || 'Failed to get profile');
   }
-  
+
   return data;
+};
+
+export const verifyEmail = async (email, otp) => {
+  try {
+    const response = await fetch(`${API_URL}/api/auth/verify-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        otp
+      }),
+    });
+
+
+    if (!response.ok) {
+      throw new Error(data.detail || 'Failed to verify email');
+    }
+
+  } catch (error) {
+    console.error('Email verification error:', error);
+    throw error;
+  }
 };

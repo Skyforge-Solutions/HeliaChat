@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { FiMail, FiLock, FiUser, FiEye, FiEyeOff, FiCheck, FiX } from 'react-icons/fi';
 import logo from '../../assets/logo.svg';
-import { Link, useNavigate } from 'react-router-dom';
-import { register } from '../../services/authService';
+import { Link,  } from 'react-router-dom';
+import { register, verifyEmail } from '../../services/authService';
 import { useAuth } from '../../context/AuthContext';
+import { useSignup } from '../../context/SignupContext';
 
 export default function Signup() {
-	const navigate = useNavigate();
-	const { signup } = useAuth();
+	const { login } = useAuth();
+	const { signupStep, setSignupStep, signupData, updateSignupData, resetSignup } = useSignup();
 
 	const [formData, setFormData] = useState({
 		name: '',
@@ -16,6 +17,7 @@ export default function Signup() {
 		confirmPassword: '',
 	});
 
+	const [otp, setOtp] = useState('');
 	const [showPassword, setShowPassword] = useState(false);
 	const [error, setError] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
@@ -92,20 +94,15 @@ export default function Signup() {
 				password: formData.password,
 			});
 
-			// Option 1: Automatically sign in the user after signup
-			const signupData = {
+			// Store signup data in context
+			updateSignupData({
 				name: formData.name,
 				email: formData.email,
-				token: userData.access_token,
-				credits: 100,
-				subscriptionType: 'Free',
-				language: 'English',
-			};
+				password: formData.password,
+			});
 
-			signup(signupData);
-
-			// Option 2: Redirect to login page
-			// navigate('/login');
+			// Move to verification step
+			setSignupStep(2);
 		} catch (err) {
 			setError(err.message || 'Failed to create account. Please try again.');
 			console.error('Signup error:', err);
@@ -113,6 +110,107 @@ export default function Signup() {
 			setIsLoading(false);
 		}
 	};
+
+	const handleVerifyEmail = async (e) => {
+		e.preventDefault();
+		setError('');
+		setIsLoading(true);
+		console.log(signupData.email, otp);
+		try {
+			await verifyEmail(signupData.email, otp);
+
+			
+			login(signupData.email, signupData.password);
+			resetSignup();
+		} catch (err) {
+			setError(err.message || 'Failed to verify email. Please try again.');
+			console.error('Verification error:', err);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	if (signupStep === 2) {
+		return (
+			<div className='min-h-screen flex items-center justify-center bg-background p-4'>
+				<div className='w-full max-w-md'>
+					<div className='text-center mb-8'>
+						<img
+							src={logo}
+							alt='HeliaChat Logo'
+							className='h-12 mx-auto mb-4'
+						/>
+						<h1 className='text-2xl font-bold text-foreground'>Verify your email</h1>
+						<p className='text-muted-foreground mt-2'>
+							We've sent a verification code to {signupData.email}
+						</p>
+					</div>
+
+					{error && (
+						<div className='bg-destructive/10 text-destructive px-4 py-3 rounded-md mb-4'>
+							{error}
+						</div>
+					)}
+
+					<form
+						onSubmit={handleVerifyEmail}
+						className='space-y-4'
+					>
+						<div>
+							<label
+								htmlFor='otp'
+								className='block text-sm font-medium text-foreground mb-1'
+							>
+								Verification Code <span className='text-destructive'>*</span>
+							</label>
+							<div className='relative'>
+								<div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+									<FiMail className='text-muted-foreground' />
+								</div>
+								<input
+									id='otp'
+									type='text'
+									value={otp}
+									onChange={(e) => setOtp(e.target.value)}
+									className='block w-full pl-10 pr-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary'
+									placeholder='Enter verification code'
+									disabled={isLoading}
+									required
+								/>
+							</div>
+						</div>
+
+						<div>
+							<button
+								type='submit'
+								className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary ${
+									isLoading ? 'opacity-70 cursor-not-allowed' : ''
+								}`}
+								disabled={isLoading}
+							>
+								{isLoading ? 'Verifying...' : 'Verify Email'}
+							</button>
+						</div>
+					</form>
+
+					<div className='mt-6 text-center'>
+						<p className='text-sm text-muted-foreground'>
+							Didn't receive the code?{' '}
+							<button
+								type='button'
+								className='font-medium text-primary hover:text-primary'
+								onClick={() => {
+									// TODO: Implement resend verification code
+								}}
+							>
+								Resend
+							</button>
+						</p>
+					</div>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className='min-h-screen flex items-center justify-center bg-background p-4'>

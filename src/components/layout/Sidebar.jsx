@@ -9,9 +9,11 @@ import apiClient from '../../services/api/ApiClient';
 
 export default function Sidebar({ collapsed, toggleSidebar }) {
 	const { data: sessions, isLoading: isSessionsLoading } = apiClient.chat.useGetSessions();
+	const deleteSessionMutation = apiClient.chat.useDeleteSession();
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState('');
 	const [showClearConfirm, setShowClearConfirm] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
 	const navigate = useNavigate();
 	const location = useLocation();
 
@@ -27,9 +29,32 @@ export default function Sidebar({ collapsed, toggleSidebar }) {
 		setIsMobileMenuOpen(!isMobileMenuOpen);
 	};
 
-	const handleClearAllSessions = () => {
-		setShowClearConfirm(false);
+	const handleClearAllSessions = async () => {
+		if (!sessions || sessions.length === 0) {
+			setShowClearConfirm(false);
+			return;
+		}
 		
+		setIsDeleting(true);
+		
+		try {
+			// Delete sessions one by one
+			for (const session of sessions) {
+				await deleteSessionMutation.mutateAsync(session.id);
+				// Small delay to prevent overwhelming the server
+				await new Promise(resolve => setTimeout(resolve, 100));
+			}
+			
+			// Navigate to new chat if we're currently in a chat that was deleted
+			if (location.pathname.startsWith('/chat/') && location.pathname !== '/chat/new') {
+				navigate('/chat/new');
+			}
+		} catch (error) {
+			console.error('Error deleting sessions:', error);
+		} finally {
+			setIsDeleting(false);
+			setShowClearConfirm(false);
+		}
 	};
 
 	// Filter sessions based on search query
@@ -114,7 +139,7 @@ export default function Sidebar({ collapsed, toggleSidebar }) {
 						<h2 className='text-sm font-medium text-muted-foreground px-2 py-2'>Chat History</h2>
 					)}
 					<ul className='space-y-1'>
-						{isSessionsLoading ? (
+						{isSessionsLoading || isDeleting ? (
 							renderSkeletons()
 						) : filteredSessions.length === 0 ? (
 							<li className='text-center text-sm text-muted-foreground py-4'>
@@ -144,9 +169,10 @@ export default function Sidebar({ collapsed, toggleSidebar }) {
 							onClick={() => setShowClearConfirm(true)}
 							className='w-full flex items-center text-left py-2 px-2 rounded hover:bg-destructive/10 transition-colors text-destructive'
 							title="Clear all chats"
+							disabled={isDeleting || isSessionsLoading || !sessions?.length}
 						>
 							<FiTrash2 className="mr-2" size={14} />
-							<span className="text-sm">Clear all chats</span>
+							<span className="text-sm">{isDeleting ? 'Deleting...' : 'Clear all chats'}</span>
 						</button>
 						
 						
@@ -159,6 +185,7 @@ export default function Sidebar({ collapsed, toggleSidebar }) {
 				<ClearAllConfirmation
 					onClose={() => setShowClearConfirm(false)}
 					onConfirm={handleClearAllSessions}
+					isDeleting={isDeleting}
 				/>
 			)}
 		</>

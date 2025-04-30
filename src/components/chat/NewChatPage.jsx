@@ -12,6 +12,7 @@ const NewChatPage = () => {
 	const [isAiResponding, setIsAiResponding] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [loadingProgress, setLoadingProgress] = useState(0);
+	const [chatId, setChatId] = useState(null);
 	const navigate = useNavigate();
 	const { setPendingMessage } = usePendingMessage();
 
@@ -36,6 +37,7 @@ const NewChatPage = () => {
 		onSuccess: (data) => {
 			// Complete the progress bar before navigating
 			setLoadingProgress(100);
+			setChatId(data.id);
 			setTimeout(() => {
 				navigate(`/chat/${data.id}`);
 				setIsSubmitting(false);
@@ -58,12 +60,12 @@ const NewChatPage = () => {
 		setIsAiResponding(true);
 		setLoadingProgress(10); // Start with some progress
 		
-		// Set the pending message before creating the session
-		setPendingMessage({ content, file, modelId });
-
 		// Create a new chat session with the first few words of the prompt as the name
 		const sessionName = content.length > 30 ? content.substring(0, 30) + '...' : content;
 		createSession({ name: sessionName });
+		
+		// Set the pending message before creating the session
+		setPendingMessage({ content, file, modelId, chatId });
 	};
 
 	return (

@@ -27,6 +27,18 @@ function App() {
 					<PendingMessageProvider>
 						<Router>
 							<Routes>
+								<Route element={<ProtectedRoute />}>
+									<Route element={<MainLayout />}>
+										<Route
+											path='/'
+											element={<HomePage />}
+										/>
+										<Route
+											path='/chat/:chatId'
+											element={<ChatPage />}
+										/>
+									</Route>
+								</Route>
 								{/* Auth routes */}
 								<Route element={<AuthLayout />}>
 									<Route
@@ -48,18 +60,6 @@ function App() {
 								</Route>
 
 								{/* Protected routes */}
-								<Route element={<ProtectedRoute />}>
-									<Route element={<MainLayout />}>
-										<Route
-											path='/'
-											element={<HomePage />}
-										/>
-										<Route
-											path='/chat/:chatId'
-											element={<ChatPage />}
-										/>
-									</Route>
-								</Route>
 
 								{/* Fallback route */}
 								<Route

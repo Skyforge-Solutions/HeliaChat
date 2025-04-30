@@ -7,14 +7,20 @@ const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-	const [isAuthenticated, setIsAuthenticated] = useState(false);
-	const [user, setUser] = useState(null);
+	const [authState, setAuthState] = useState({
+		isAuthenticated: false,
+		user: null,
+		loading: true
+	});
 	const { data: profile, isLoading: isProfileLoading } = apiClient.auth.useGetProfile();
-
+	
 	useEffect(() => {
 		if (profile) {
-			setUser(profile);
-			setIsAuthenticated(true);
+			setAuthState({
+				isAuthenticated: true,
+				user: profile,
+				loading: false
+			});
 		}
 	}, [profile]);
 
@@ -27,8 +33,11 @@ export const AuthProvider = ({ children }) => {
 				refreshToken: data.refresh_token,
 			};
 			localStorage.setItem('heliaUser', JSON.stringify(userData));
-			setUser(userData);
-			setIsAuthenticated(true);
+			setAuthState({
+				isAuthenticated: true,
+				user: userData,
+				loading: false
+			});
 			return userData;
 		} catch (error) {
 			throw error;
@@ -48,8 +57,11 @@ export const AuthProvider = ({ children }) => {
 		try {
 			logoutService(); // Call the logout service
 			localStorage.removeItem('heliaUser');
-			setUser(null);
-			setIsAuthenticated(false);
+			setAuthState({
+				isAuthenticated: false,
+				user: null,
+				loading: false
+			});
 		} catch (error) {
 			console.error('Logout error:', error);
 		}
@@ -58,9 +70,9 @@ export const AuthProvider = ({ children }) => {
 	return (
 		<AuthContext.Provider
 			value={{
-				isAuthenticated,
-				user,
-				loading: isProfileLoading,
+				isAuthenticated: authState.isAuthenticated,
+				user: authState.user,
+				loading: isProfileLoading || authState.loading,
 				isProfileLoading,
 				login,
 				signup,

@@ -4,15 +4,18 @@ import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
+import Loading from '../shared/loading';
 
 const MainLayout = () => {
 	const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-	const { user, logout } = useAuth();
+	const { user, logout, isLoading } = useAuth();
 
 	const toggleSidebar = () => {
 		setSidebarCollapsed(!sidebarCollapsed);
 	};
-
+	if (isLoading) {
+		return <Loading />;
+	}
 	return (
 		<div className='h-screen flex flex-col bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark'>
 			<Navbar

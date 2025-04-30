@@ -1,8 +1,9 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import Loading from '../shared/loading';	
+import Loading from '../shared/loading';
 const ProtectedRoute = () => {
 	const { isAuthenticated, loading } = useAuth();
+	console.log(isAuthenticated, loading);
 
 	// Show loading state while checking authentication
 	if (loading) {

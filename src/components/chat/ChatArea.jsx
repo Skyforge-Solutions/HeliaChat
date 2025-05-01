@@ -7,6 +7,7 @@ import apiClient from '../../services/api/ApiClient';
 import { usePendingMessage } from '../../context/PendingMessageContext';
 import { useChatMessage } from '../../hooks/useChatMessage';
 import ChatSkeleton from '../shared/ChatSkeleton';
+import { useCredits } from '../../context/CreditContext';
 
 // Memoized chat message component
 const MemoizedChatMessage = memo(({ message }) => (
@@ -43,25 +44,34 @@ const ChatMessages = memo(
 );
 
 // Component to handle pending messages
-const PendingMessageHandler = memo(({ pendingMessage, chatId, sendMessage, setChatHistory }) => {
-	useEffect(() => {
-		// Only process if there's a pendingMessage, we have a chatId, and the message hasn't been sent yet
-		if (pendingMessage && chatId && !pendingMessage.sent) {
-			// Send message to the server
-			sendMessage({
-				sessionId: chatId,
-				content: pendingMessage.content,
-				file: pendingMessage.file,
-				modelId: pendingMessage.modelId,
-			});
+const PendingMessageHandler = memo(
+	({ pendingMessage, chatId, sendMessage, setChatHistory, useCredit }) => {
+		useEffect(() => {
+			// Only process if there's a pendingMessage, we have a chatId, and the message hasn't been sent yet
+			if (pendingMessage && chatId && !pendingMessage.sent) {
+				// Check if user has credits before sending message
+				if (!useCredit()) {
+					// If no credits, mark as sent but don't actually send
+					pendingMessage.sent = true;
+					return;
+				}
 
-			// Mark the pending message as sent
-			pendingMessage.sent = true;
-		}
-	}, [pendingMessage, chatId, sendMessage, setChatHistory]);
+				// Send message to the server
+				sendMessage({
+					sessionId: chatId,
+					content: pendingMessage.content,
+					file: pendingMessage.file,
+					modelId: pendingMessage.modelId,
+				});
 
-	return null;
-});
+				// Mark the pending message as sent
+				pendingMessage.sent = true;
+			}
+		}, [pendingMessage, chatId, sendMessage, setChatHistory, useCredit]);
+
+		return null;
+	}
+);
 
 // Component to handle chat history fetching
 const ChatHistoryFetcher = memo(({ chatId, pendingMessage, setChatHistory }) => {
@@ -105,10 +115,13 @@ const AutoScroller = memo(({ messagesEndRef, chatHistory, isStreaming, streaming
 	return null;
 });
 
+
+
 const ChatArea = ({ sidebarCollapsed }) => {
 	const { chatId } = useParams();
 	const messagesEndRef = useRef(null);
 	const { pendingMessage } = usePendingMessage();
+	const { credits, useCredit } = useCredits();
 
 	const {
 		isAiResponding,
@@ -128,6 +141,12 @@ const ChatArea = ({ sidebarCollapsed }) => {
 	// Handle sending new messages
 	const handleSendMessage = useCallback(
 		async (content, file = null, modelId = null) => {
+			// Check if user has credits before sending
+			if (credits <= 0) return;
+
+			// Use one credit
+			useCredit();
+
 			await sendMessage({
 				sessionId: chatId,
 				content,
@@ -135,7 +154,7 @@ const ChatArea = ({ sidebarCollapsed }) => {
 				modelId,
 			});
 		},
-		[chatId, sendMessage]
+		[chatId, sendMessage, credits, useCredit]
 	);
 
 	/**
@@ -170,13 +189,16 @@ const ChatArea = ({ sidebarCollapsed }) => {
 	};
 
 	return (
-		<div className='flex flex-col h-full bg-background'>
+		<div className='flex flex-col h-full bg-background relative'>
+			{/* Credits display */}
+
 			{/* Side effect handlers */}
 			<PendingMessageHandler
 				pendingMessage={pendingMessage}
 				chatId={chatId}
 				sendMessage={sendMessage}
 				setChatHistory={setChatHistory}
+				useCredit={useCredit}
 			/>
 
 			<ChatHistoryFetcher
@@ -203,7 +225,8 @@ const ChatArea = ({ sidebarCollapsed }) => {
 			>
 				<ChatInput
 					onSendMessage={handleSendMessage}
-					isDisabled={isAiResponding}
+					isDisabled={isAiResponding || credits <= 0}
+					placeholder={credits <= 0 ? "You've used all your credits" : 'Type a message...'}
 				/>
 			</div>
 		</div>

@@ -4,11 +4,13 @@ import ThemeSwitcher from '../navbar/ThemeSwitcher';
 import UserProfileMenu from '../navbar/UserProfileMenu';
 import SettingsModal from '../settings/SettingsModal';
 import { useAuth } from '../../context/AuthContext';
+import { useCredits } from '../../context/CreditContext';
 import logo from '../../assets/logo.svg';
 import apiClient from '../../services/api/ApiClient';
 
 export default function Navbar() {
 	const { user, logout } = useAuth();
+	const { credits } = useCredits();
 	const [showSettingsModal, setShowSettingsModal] = useState(false);
 
 	const handleOpenSettings = () => {
@@ -35,7 +37,7 @@ export default function Navbar() {
 	const userWithDefaults = {
 		name: user?.name || 'User',
 		email: user?.email || '',
-		credits: user?.credits || 0,
+		credits: credits || 0,
 		subscriptionType: user?.subscriptionType || 'Free',
 		language: user?.language || 'English',
 	};
@@ -55,7 +57,7 @@ export default function Navbar() {
 					<div className='flex items-center space-x-4'>
 						<div className='text-sm text-muted-foreground hidden sm:flex items-center'>
 							<FiCreditCard className='mr-1' />
-							<span>{userWithDefaults.credits} credits</span>
+							<span>{credits} credits</span>
 						</div>
 
 						<ThemeSwitcher />

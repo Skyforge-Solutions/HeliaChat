@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { FiMail, FiLock, FiUser, FiEye, FiEyeOff, FiCheck, FiX } from 'react-icons/fi';
 import logo from '../../assets/logo.svg';
-import { Link,  } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { register, verifyEmail } from '../../services/authService';
 import { useAuth } from '../../context/AuthContext';
 import { useSignup } from '../../context/SignupContext';
+import { useCredits } from '../../context/CreditContext';
 
 export default function Signup() {
 	const { login } = useAuth();
 	const { signupStep, setSignupStep, signupData, updateSignupData, resetSignup } = useSignup();
+	const { resetCredits } = useCredits();
 
 	const [formData, setFormData] = useState({
 		name: '',
@@ -88,12 +90,6 @@ export default function Signup() {
 		setIsLoading(true);
 
 		try {
-			const userData = await register({
-				name: formData.name,
-				email: formData.email,
-				password: formData.password,
-			});
-
 			// Store signup data in context
 			updateSignupData({
 				name: formData.name,
@@ -119,8 +115,11 @@ export default function Signup() {
 		try {
 			await verifyEmail(signupData.email, otp);
 
-			
+			// Initialize credits for the new user
+			resetCredits();
+
 			login(signupData.email, signupData.password);
+
 			resetSignup();
 		} catch (err) {
 			setError(err.message || 'Failed to verify email. Please try again.');
@@ -192,21 +191,6 @@ export default function Signup() {
 							</button>
 						</div>
 					</form>
-
-					<div className='mt-6 text-center'>
-						<p className='text-sm text-muted-foreground'>
-							Didn't receive the code?{' '}
-							<button
-								type='button'
-								className='font-medium text-primary hover:text-primary'
-								onClick={() => {
-									// TODO: Implement resend verification code
-								}}
-							>
-								Resend
-							</button>
-						</p>
-					</div>
 				</div>
 			</div>
 		);

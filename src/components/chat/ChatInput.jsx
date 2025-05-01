@@ -1,13 +1,16 @@
 import { useState } from 'react';
-import { FiSend } from 'react-icons/fi';
+import { FiSend, FiCreditCard } from 'react-icons/fi';
 import ModelSelector from './input/ModelSelector';
 import ImageUploader from './input/ImageUploader';
 import MessageInput from './input/MessageInput';
+import { useCredits } from '../../context/CreditContext';
+import { Link } from 'react-router-dom';
 
 export default function ChatInput({ onSendMessage, isDisabled, placeholder }) {
   const [message, setMessage] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const { credits } = useCredits();
 
   const models = [
     {
@@ -73,6 +76,37 @@ export default function ChatInput({ onSendMessage, isDisabled, placeholder }) {
     setImagePreview(null);
   };
 
+  // Determine the status message and UI elements based on the current state
+  const renderStatusMessage = () => {
+    if (isDisabled) {
+      if (credits <= 0) {
+        return (
+          <div className="mt-2 flex items-center justify-center gap-2 h-6 text-destructive">
+            <FiCreditCard className="animate-pulse" />
+            <p className="text-sm">No credits remaining. <Link to="/buy-credit" className="underline hover:text-primary">Purchase more</Link> to continue.</p>
+          </div>
+        );
+      } else {
+        return (
+          <div className="mt-2 flex items-center justify-center gap-2 h-6">
+            <div className="flex space-x-1">
+              <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }}></div>
+              <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '150ms' }}></div>
+              <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }}></div>
+            </div>
+            <p className="text-sm text-primary">AI is responding...</p>
+          </div>
+        );
+      }
+    } else {
+      return (
+        <div className="mt-2 text-xs text-muted-foreground text-center h-6">
+          Press Enter to send, Shift+Enter for new line
+        </div>
+      );
+    }
+  };
+
   return (
     <div className="bg-background py-4 px-4">
       <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
@@ -130,29 +164,13 @@ export default function ChatInput({ onSendMessage, isDisabled, placeholder }) {
           <button
             type="submit"
             disabled={(!message.trim() && !selectedFile) || isDisabled}
-            className="text-muted-foreground hover:text-primary disabled:opacity-40"
+            className={`${(!message.trim() && !selectedFile) || isDisabled ? 'opacity-40' : 'hover:text-primary'} text-muted-foreground transition-colors`}
           >
             <FiSend size={20} />
           </button>
         </div>
 
-
-        {isDisabled ? (
-          <div className="mt-2 flex items-center justify-center gap-2 h-6">
-            <div className="flex space-x-1">
-              <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }}></div>
-              <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '150ms' }}></div>
-              <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }}></div>
-            </div>
-            <p className="text-sm text-primary">
-              {placeholder || "AI is responding..."}
-            </p>
-          </div>
-        ) : (
-          <div className="mt-2  text-xs text-muted-foreground text-center h-6">
-            Press Enter to send, Shift+Enter for new line
-          </div>
-        )}
+        {renderStatusMessage()}
       </form>
     </div>
   );

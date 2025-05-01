@@ -1,107 +1,81 @@
 import { useState, useEffect } from 'react';
-import { FiCreditCard } from 'react-icons/fi';
+import { FiCreditCard, FiLogOut } from 'react-icons/fi';
 import ThemeSwitcher from '../navbar/ThemeSwitcher';
 import UserProfileMenu from '../navbar/UserProfileMenu';
-import UserSettingsForm from '../navbar/UserSettingsForm';
+import SettingsModal from '../settings/SettingsModal';
+import { useAuth } from '../../context/AuthContext';
+import { useCredits } from '../../context/CreditContext';
 import logo from '../../assets/logo.svg';
+import apiClient from '../../services/api/ApiClient';
 
 export default function Navbar() {
-  const [showUserDataForm, setShowUserDataForm] = useState(false);
+	const { user, logout } = useAuth();
+	const { credits } = useCredits();
+	const [showSettingsModal, setShowSettingsModal] = useState(false);
 
-  // Initialize user data from localStorage if available
-  const [userData, setUserData] = useState(() => {
-    const savedUserData = localStorage.getItem('heliaUserData');
-    if (savedUserData) {
-      try {
-        return JSON.parse(savedUserData);
-      } catch (e) {
-        console.error('Error parsing user data:', e);
-        return getDefaultUserData();
-      }
-    }
-    return getDefaultUserData();
-  });
+	const handleOpenSettings = () => {
+		setShowSettingsModal(true);
+	};
 
-  function getDefaultUserData() {
-    return {
-      name: '',
-      age: '',
-      occupation: '',
-      tone_preference: 'casual',
-      tech_familiarity: 'moderate',
-      parent_type: '',
-      time_with_kids: '2',
-      children: [],
-    };
-  }
+	const handleCloseSettings = () => {
+		setShowSettingsModal(false);
+	};
 
-  // Mock user data - would come from user context in a real app
-  const user = {
-    name: userData.name || 'User',
-    credits: 100,
-    subscriptionType: 'Free',
-    language: 'English',
-  };
+	// Close settings modal on escape key
+	useEffect(() => {
+		const handleEscape = (e) => {
+			if (e.key === 'Escape' && showSettingsModal) {
+				setShowSettingsModal(false);
+			}
+		};
 
-  const handleOpenUserSettings = () => {
-    setShowUserDataForm(true);
-  };
+		window.addEventListener('keydown', handleEscape);
+		return () => window.removeEventListener('keydown', handleEscape);
+	}, [showSettingsModal]);
 
-  const handleCloseUserSettings = () => {
-    setShowUserDataForm(false);
-    // Refresh user data from localStorage if it was updated
-    const savedUserData = localStorage.getItem('heliaUserData');
-    if (savedUserData) {
-      try {
-        setUserData(JSON.parse(savedUserData));
-      } catch (e) {
-        console.error('Error parsing user data:', e);
-      }
-    }
-  };
+	// Update UserProfileMenu to pass onLogout
+	const userWithDefaults = {
+		name: user?.name || 'User',
+		email: user?.email || '',
+		credits: credits || 0,
+		subscriptionType: user?.subscriptionType || 'Free',
+		language: user?.language || 'English',
+	};
 
-  // Close user data form on escape key
-  useEffect(() => {
-    const handleEscape = e => {
-      if (e.key === 'Escape' && showUserDataForm) {
-        setShowUserDataForm(false);
-      }
-    };
+	return (
+		<>
+			<nav className='fixed top-0 w-full bg-background px-4 py-2 z-10'>
+				<div className='flex justify-between items-center'>
+					<div className='flex items-center ml-11'>
+						<img
+							src={logo}
+							alt='HeliaChat Logo'
+							className='h-8'
+						/>
+					</div>
 
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [showUserDataForm]);
+					<div className='flex items-center space-x-4'>
+						<div className='text-sm text-muted-foreground hidden sm:flex items-center'>
+							<FiCreditCard className='mr-1' />
+							<span>{credits} credits</span>
+						</div>
 
-  return (
-    <>
-      <nav className="fixed top-0 w-full bg-background px-4 py-2 z-10">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center ml-11">
-            <img src={logo} alt="HeliaChat Logo" className="h-8" />
-          </div>
+						<ThemeSwitcher />
+						<UserProfileMenu
+							user={userWithDefaults}
+							onOpenUserSettings={handleOpenSettings}
+							onLogout={logout}
+						/>
+					</div>
+				</div>
+			</nav>
 
-          <div className="flex items-center space-x-4">
-            <div className="text-sm text-muted-foreground hidden sm:flex items-center">
-              <FiCreditCard className="mr-1" />
-              <span>{user.credits} credits</span>
-            </div>
-
-            <ThemeSwitcher />
-            <UserProfileMenu
-              user={user}
-              onOpenUserSettings={handleOpenUserSettings}
-            />
-          </div>
-        </div>
-      </nav>
-
-      {/* User Settings Form */}
-      {showUserDataForm && (
-        <UserSettingsForm
-          onClose={handleCloseUserSettings}
-          initialData={userData}
-        />
-      )}
-    </>
-  );
+			{/* Settings Modal */}
+			{showSettingsModal && (
+				<SettingsModal
+					onClose={handleCloseSettings}
+				/>
+			)}
+		</>
+	);
 }

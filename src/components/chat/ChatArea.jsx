@@ -1,128 +1,236 @@
-import { useRef, useEffect, useState } from 'react';
-import { useChat } from '../../context/ChatContext';
+import React, { useRef, useEffect, useCallback, memo } from 'react';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import Welcome from './message/Welcome';
-import { getAIResponse } from '../../services/aiService';
+import { useParams } from 'react-router-dom';
+import apiClient from '../../services/api/ApiClient';
+import { usePendingMessage } from '../../context/PendingMessageContext';
+import { useChatMessage } from '../../hooks/useChatMessage';
+import ChatSkeleton from '../shared/ChatSkeleton';
+import { useCredits } from '../../context/CreditContext';
 
-export default function ChatArea({ sidebarCollapsed }) {
-  const { currentSession, addMessage } = useChat();
-  const messagesEndRef = useRef(null);
-  const [isAiResponding, setIsAiResponding] = useState(false);
-  const [streamingText, setStreamingText] = useState('');
-  const [streamingMessageId, setStreamingMessageId] = useState(null);
+// Memoized chat message component
+const MemoizedChatMessage = memo(({ message }) => (
+	<div>
+		<ChatMessage message={message} />
+	</div>
+));
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [currentSession?.messages, streamingText]);
+// Chat messages container component
+const ChatMessages = memo(
+	({ chatHistory, isStreaming, streamingText, streamingMessageId, messagesEndRef }) => (
+		<>
+			{chatHistory?.map((message) => (
+				<MemoizedChatMessage
+					key={message.id}
+					message={message}
+				/>
+			))}
+			{isStreaming && streamingMessageId && (
+				<MemoizedChatMessage
+					key={`streaming-${streamingMessageId}`}
+					message={{
+						id: streamingMessageId,
+						role: 'assistant',
+						content: streamingText || '...',
+						timestamp: new Date().toISOString(),
+						isStreaming: true,
+					}}
+				/>
+			)}
+			<div ref={messagesEndRef} />
+		</>
+	)
+);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+// Component to handle pending messages
+const PendingMessageHandler = memo(
+	({ pendingMessage, chatId, sendMessage, setChatHistory, useCredit }) => {
+		useEffect(() => {
+			// Only process if there's a pendingMessage, we have a chatId, and the message hasn't been sent yet
+			if (pendingMessage && chatId && !pendingMessage.sent) {
+				// Check if user has credits before sending message
+				if (!useCredit()) {
+					// If no credits, mark as sent but don't actually send
+					pendingMessage.sent = true;
+					return;
+				}
 
-  const handleSendMessage = (content, file = null) => {
-    // Handle image attachment
-    let imageData = file ? URL.createObjectURL(file) : null;
+				// Send message to the server
+				sendMessage({
+					sessionId: chatId,
+					content: pendingMessage.content,
+					file: pendingMessage.file,
+					modelId: pendingMessage.modelId,
+				});
 
-    // Add user message
-    addMessage({
-      id: Date.now(),
-      role: 'user',
-      content,
-      image: imageData,
-      timestamp: new Date().toISOString(),
-    });
+				// Mark the pending message as sent
+				pendingMessage.sent = true;
+			}
+		}, [pendingMessage, chatId, sendMessage, setChatHistory, useCredit]);
 
-    // Start AI response process
-    handleAiResponse(content);
-  };
+		return null;
+	}
+);
 
-  const handleAiResponse = userMessage => {
-    // Disable input while AI is "responding"
-    setIsAiResponding(true);
+// Component to handle chat history fetching
+const ChatHistoryFetcher = memo(({ chatId, pendingMessage, setChatHistory }) => {
+	// Only fetch history when we have a valid chatId, not creating a new chat,
+	// no pending message with a chatId, and pending message hasn't been sent
+	const { data: fetchedChatHistory } = apiClient.chat.useGetHistory(chatId, {
+		enabled: !!chatId && chatId !== 'new' && !pendingMessage?.chatId && !pendingMessage?.sent,
+	});
 
-    // Prepare AI response
-    const aiResponseId = Date.now() + 1;
-    const aiResponse = getAIResponse(userMessage);
+	// Update chat history when data is received
+	useEffect(() => {
+		const shouldUpdateHistory =
+			fetchedChatHistory && chatId !== 'new' && !pendingMessage?.chatId && !pendingMessage?.sent;
 
-    // Add empty message that will be streamed
-    addMessage({
-      id: aiResponseId,
-      role: 'assistant',
-      content: '',
-      timestamp: new Date().toISOString(),
-    });
+		if (shouldUpdateHistory) {
+			setChatHistory(fetchedChatHistory);
+		}
+	}, [fetchedChatHistory, chatId, setChatHistory, pendingMessage]);
 
-    // Set the ID of the message being streamed
-    setStreamingMessageId(aiResponseId);
+	return null;
+});
 
-    // Stream the response character by character
-    streamResponseText(aiResponse, aiResponseId);
-  };
+// Auto-scroll component
+const AutoScroller = memo(({ messagesEndRef, chatHistory, isStreaming, streamingText }) => {
+	const scrollToBottom = useCallback(() => {
+		messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+	}, [messagesEndRef]);
 
-  const streamResponseText = (text, messageId) => {
-    let index = 0;
-    const streamInterval = setInterval(() => {
-      if (index < text.length) {
-        setStreamingText(text.substring(0, index + 1));
-        index++;
-      } else {
-        // Finish streaming
-        clearInterval(streamInterval);
-        setStreamingMessageId(null);
-        setStreamingText('');
-        setIsAiResponding(false);
+	// Scroll when chat history changes
+	useEffect(() => {
+		scrollToBottom();
+	}, [chatHistory, scrollToBottom]);
 
-        // Update the message with the complete response
-        addMessage({
-          id: messageId,
-          role: 'assistant',
-          content: text,
-          timestamp: new Date().toISOString(),
-        });
-      }
-    }, 15); // Adjust speed here
-  };
+	// Scroll when streaming text updates
+	useEffect(() => {
+		if (isStreaming) {
+			scrollToBottom();
+		}
+	}, [streamingText, isStreaming, scrollToBottom]);
 
-  return (
-    <div className="flex flex-col h-full bg-background">
-      <div className="flex-1 overflow-y-auto pt-14 pb-20">
-        {currentSession?.messages.length === 0 ? (
-          <Welcome />
-        ) : (
-          <>
-            {currentSession?.messages.map(message => (
-              <div key={message.id}>
-                {/* For regular messages or completed streaming messages */}
-                {message.id !== streamingMessageId && (
-                  <ChatMessage message={message} />
-                )}
+	return null;
+});
 
-                {/* For the currently streaming message */}
-                {message.id === streamingMessageId && (
-                  <ChatMessage
-                    message={{
-                      ...message,
-                      content: streamingText,
-                    }}
-                  />
-                )}
-              </div>
-            ))}
-          </>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
-      <div
-        className={`fixed bottom-0 left-0 right-0 transition-all duration-300 ${
-          sidebarCollapsed ? 'md:pl-16' : 'md:pl-64'
-        }`}
-      >
-        <ChatInput
-          onSendMessage={handleSendMessage}
-          isDisabled={isAiResponding}
-        />
-      </div>
-    </div>
-  );
-}
+
+
+const ChatArea = ({ sidebarCollapsed }) => {
+	const { chatId } = useParams();
+	const messagesEndRef = useRef(null);
+	const { pendingMessage } = usePendingMessage();
+	const { credits, useCredit } = useCredits();
+
+	const {
+		isAiResponding,
+		isStreaming,
+		streamingText,
+		streamingMessageId,
+		chatHistory,
+		setChatHistory,
+		sendMessage,
+	} = useChatMessage(chatId);
+
+	// Get loading state for history
+	const { isLoading: historyLoading } = apiClient.chat.useGetHistory(chatId, {
+		enabled: !!chatId && chatId !== 'new' && !pendingMessage?.chatId,
+	});
+
+	// Handle sending new messages
+	const handleSendMessage = useCallback(
+		async (content, file = null, modelId = null) => {
+			// Check if user has credits before sending
+			if (credits <= 0) return;
+
+			// Use one credit
+			useCredit();
+
+			await sendMessage({
+				sessionId: chatId,
+				content,
+				file,
+				modelId,
+			});
+		},
+		[chatId, sendMessage, credits, useCredit]
+	);
+
+	/**
+	 * Determines what content to render based on current state
+	 */
+	const renderChatContent = () => {
+		// If we have chat history (including pending messages), show it
+		if (chatHistory?.length > 0) {
+			return (
+				<ChatMessages
+					chatHistory={chatHistory}
+					isStreaming={isStreaming}
+					streamingText={streamingText}
+					streamingMessageId={streamingMessageId}
+					messagesEndRef={messagesEndRef}
+				/>
+			);
+		}
+
+		// If history is loading and we don't have pending messages, show skeleton
+		if (historyLoading) {
+			return <ChatSkeleton />;
+		}
+
+		// No history and not loading - show welcome screen if AI isn't responding
+		if (!isAiResponding) {
+			return <Welcome />;
+		}
+
+		// Default empty state
+		return null;
+	};
+
+	return (
+		<div className='flex flex-col h-full bg-background relative'>
+			{/* Credits display */}
+
+			{/* Side effect handlers */}
+			<PendingMessageHandler
+				pendingMessage={pendingMessage}
+				chatId={chatId}
+				sendMessage={sendMessage}
+				setChatHistory={setChatHistory}
+				useCredit={useCredit}
+			/>
+
+			<ChatHistoryFetcher
+				chatId={chatId}
+				pendingMessage={pendingMessage}
+				setChatHistory={setChatHistory}
+			/>
+
+			<AutoScroller
+				messagesEndRef={messagesEndRef}
+				chatHistory={chatHistory}
+				isStreaming={isStreaming}
+				streamingText={streamingText}
+			/>
+
+			{/* Main chat content area */}
+			<div className='flex-1 overflow-y-auto pt-14 pb-20'>{renderChatContent()}</div>
+
+			{/* Chat input */}
+			<div
+				className={`fixed bottom-0 left-0 right-0 transition-all duration-300 ${
+					sidebarCollapsed ? 'md:pl-16' : 'md:pl-64'
+				}`}
+			>
+				<ChatInput
+					onSendMessage={handleSendMessage}
+					isDisabled={isAiResponding || credits <= 0}
+					placeholder={credits <= 0 ? "You've used all your credits" : 'Type a message...'}
+				/>
+			</div>
+		</div>
+	);
+};
+
+export default ChatArea;

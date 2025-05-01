@@ -31,6 +31,10 @@
     --primary-dark: #818cf8;
     --secondary-light: #f3f4f6;
     --secondary-dark: #1f2937;
+    --scrollbar-thumb-light: #d1d5db;
+    --scrollbar-track-light: #f3f4f6;
+    --scrollbar-thumb-dark: #4b5563;
+    --scrollbar-track-dark: #1f2937;
   }
 
   .dark {
@@ -60,6 +64,42 @@
     --primary-dark: #818cf8;
     --secondary-light: #f3f4f6;
     --secondary-dark: #1f2937;
+    --scrollbar-thumb-light: #d1d5db;
+    --scrollbar-track-light: #f3f4f6;
+    --scrollbar-thumb-dark: #4b5563;
+    --scrollbar-track-dark: #1f2937;
+  }
+  
+  /* Custom scrollbar styles */
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track-light);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb-light);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
+  
+  .dark ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track-dark);
+  }
+  
+  .dark ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb-dark);
+  }
+  
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
   }
 }
 

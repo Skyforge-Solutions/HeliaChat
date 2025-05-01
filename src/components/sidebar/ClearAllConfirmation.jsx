@@ -1,4 +1,4 @@
-export default function ClearAllConfirmation({ onClose, onConfirm }) {
+export default function ClearAllConfirmation({ onClose, onConfirm, isDeleting }) {
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-[100]">
       <div className="bg-background rounded-lg shadow-lg max-w-md w-full mx-4 p-6">
@@ -18,7 +18,7 @@ export default function ClearAllConfirmation({ onClose, onConfirm }) {
             onClick={onConfirm}
             className="px-4 py-2 rounded-md bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"
           >
-            Clear all
+            {isDeleting ? 'Deleting...' : 'Clear all'}
           </button>
         </div>
       </div>

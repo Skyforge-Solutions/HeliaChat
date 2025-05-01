@@ -7,10 +7,15 @@ export default function ChatMessage({ message }) {
 	const isStreaming = message.isStreaming;
 
 	const copyToClipboard = () => navigator.clipboard.writeText(message.content);
-
 	const readAloud = () => {
-		const utter = new SpeechSynthesisUtterance(message.content);
-		speechSynthesis.speak(utter);
+		if ('speechSynthesis' in window) {
+			const utter = new SpeechSynthesisUtterance(message.content);
+			// Set a faster speech rate
+			utter.rate = 1.5;
+			// Cancel any ongoing speech before starting new one
+			speechSynthesis.cancel();
+			speechSynthesis.speak(utter);
+		}
 	};
 
 	const toggleUp = () => setVote(vote === 'up' ? null : 'up');

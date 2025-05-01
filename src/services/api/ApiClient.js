@@ -67,6 +67,7 @@ class ApiClient {
         queryKey: this.keys.profile,
         queryFn: async () => {
           const response = await this.authClient.get('/api/auth/me');
+  
           return response.data;
         },
         ...options,

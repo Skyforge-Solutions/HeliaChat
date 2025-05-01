@@ -13,7 +13,6 @@ export const AuthProvider = ({ children }) => {
 		loading: true
 	});
 	const { data: profile, isLoading: isProfileLoading } = apiClient.auth.useGetProfile();
-	
 	useEffect(() => {
 		if (profile) {
 			setAuthState({
@@ -22,23 +21,30 @@ export const AuthProvider = ({ children }) => {
 				loading: false
 			});
 		}
-	}, [profile]);
+		else if (!isProfileLoading) {
+			setAuthState({
+				isAuthenticated: false,
+				user: null,
+				loading: false
+			});
+		}
+	}, [profile, isProfileLoading]);
 
 	const login = async (email, password) => {
 		try {
 			const data = await loginService(email, password);
-			const userData = {
-				name: data.user_name,
-				token: data.access_token,
-				refreshToken: data.refresh_token,
-			};
-			localStorage.setItem('heliaUser', JSON.stringify(userData));
-			setAuthState({
-				isAuthenticated: true,
-				user: userData,
-				loading: false
+					const userData = {
+						name: data.user_name,
+						token: data.access_token,
+						refreshToken: data.refresh_token,
+					};
+					localStorage.setItem('heliaUser', JSON.stringify(userData));
+					setAuthState({
+						isAuthenticated: true,
+						user: userData,
+				loading: false,
 			});
-			return userData;
+			return data;
 		} catch (error) {
 			throw error;
 		}

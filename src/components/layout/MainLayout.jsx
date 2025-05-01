@@ -40,7 +40,7 @@ const MainLayout = () => {
 					{sidebarCollapsed ? <FiChevronRight size={16} /> : <FiChevronLeft size={16} />}
 				</button>
 
-				<main className='flex-1 overflow-hidden'>
+				<main className='flex-1 overflow-y-auto'>
 					<Outlet context={{ sidebarCollapsed }} />
 				</main>
 			</div>

@@ -113,17 +113,7 @@ const NewChatPage = () => {
 						</div>
 					</div>
 				)}
-				{credits <= 0 && !isLoading && (
-					<div className="flex flex-col items-center justify-center mt-8">
-						<div className="flex items-center justify-center gap-2 text-destructive">
-							<FiCreditCard className="h-6 w-6" />
-							<p className="text-lg font-medium">No credits remaining</p>
-						</div>
-						<p className="text-sm text-muted-foreground mt-2 max-w-md text-center">
-							You need credits to start a new conversation. <Link to="/buy-credit" className="text-primary hover:underline">Purchase more</Link> to continue.
-						</p>
-					</div>
-				)}
+				
 				<div ref={messagesEndRef} />
 			</div>
 			<div
@@ -133,7 +123,7 @@ const NewChatPage = () => {
 			>
 				<ChatInput
 					onSendMessage={handleSendMessage}
-					
+
 					isDisabled={isAiResponding || credits <= 0}
 					placeholder={isLoading ? "Starting conversation..." : credits <= 0 ? "You've used all your credits" : "Send a message"}
 				/>

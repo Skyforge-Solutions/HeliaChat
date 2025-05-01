@@ -20,6 +20,7 @@ export const useChatMessage = (chatId) => {
       id: userMessageId,
       role: 'user',
       content: content,
+      image_url: imageUrl,
       timestamp: new Date().toISOString(),
     };
 

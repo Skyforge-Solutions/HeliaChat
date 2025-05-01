@@ -82,6 +82,17 @@ export default function ChatMessage({ message }) {
 								/>
 							</div>
 						)}
+						
+						{/* Display user's image if present */}
+						{ message.image_url && (
+							<div className='mt-2 inline-block'>
+								<img
+									src={message.image_url}
+									alt='Attachment'
+									className='max-h-48 rounded-md border border-gray-200 dark:border-gray-700'
+								/>
+							</div>
+						)}
 					</div>
 				</div>
 			</div>

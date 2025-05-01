@@ -3,17 +3,14 @@ import apiClient from '../../services/api/ApiClient';
 
 export default function SessionDropdownMenu({
   sessionId,
-  sessionName,
+  onRename,
 }) {
-  const { mutate: renameSession } = apiClient.chat.useRenameSession();
   const { mutate: deleteSession } = apiClient.chat.useDeleteSession();
 
   const handleRename = (e) => {
-    console.log(sessionId,sessionName)
     e.stopPropagation();
-    const newName = prompt("Enter new name:", sessionName);
-    if (newName && newName !== sessionName) {
-      renameSession({ chatId: sessionId, name: newName });
+    if (onRename) {
+      onRename();
     }
   };
 

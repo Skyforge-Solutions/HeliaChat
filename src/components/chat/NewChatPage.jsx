@@ -4,7 +4,7 @@ import ChatInput from './ChatInput';
 import Welcome from './message/Welcome';
 import apiClient from '../../services/api/ApiClient';
 import { usePendingMessage } from '../../context/PendingMessageContext';
-
+import { useQueryClient } from '@tanstack/react-query';
 const NewChatPage = () => {
 	const outletContext = useOutletContext();
 	const sidebarCollapsed = outletContext?.sidebarCollapsed || false;
@@ -15,6 +15,7 @@ const NewChatPage = () => {
 	const [chatId, setChatId] = useState(null);
 	const navigate = useNavigate();
 	const { setPendingMessage } = usePendingMessage();
+	const queryClient = useQueryClient();
 
 	// Simulate progress for smoother loading experience
 	useEffect(() => {
@@ -38,6 +39,8 @@ const NewChatPage = () => {
 			// Complete the progress bar before navigating
 			setLoadingProgress(100);
 			setChatId(data.id);
+			
+			queryClient.invalidateQueries({ queryKey: ['chat', 'sessions'] });
 			setTimeout(() => {
 				navigate(`/chat/${data.id}`);
 				setIsSubmitting(false);

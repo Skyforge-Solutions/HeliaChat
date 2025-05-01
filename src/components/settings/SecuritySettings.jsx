@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiSave, FiAlertCircle, FiCheckCircle } from 'react-icons/fi';
+import { FiSave, FiAlertCircle, FiCheckCircle, FiTrash2 } from 'react-icons/fi';
 import apiClient from '../../services/api/ApiClient';
 import { useAuth } from '../../context/AuthContext';
 
@@ -195,7 +195,7 @@ function ChangePasswordForm() {
 	};
 
 	return (
-		<section className='bg-card p-6 rounded-lg border border-border'>
+		<section className='bg-card p-6 rounded-lg border border-border mb-10'>
 			<h3 className='text-xl font-semibold mb-4'>Change Password</h3>
 			<form
 				onSubmit={handleSubmit}
@@ -308,12 +308,122 @@ function ChangePasswordForm() {
 	);
 }
 
+function DeleteAccountForm() {
+	const [showConfirmModal, setShowConfirmModal] = useState(false);
+	const [error, setError] = useState('');
+	const { logout } = useAuth();
+
+	const deleteAccount = apiClient.auth.useDeleteAccount({
+		onSuccess: () => {
+			logout();
+		},
+		onError: (err) => setError(err.response?.data?.message || 'Failed to delete account'),
+	});
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		setShowConfirmModal(true);
+	};
+
+	const confirmDelete = () => {
+		setError('');
+		deleteAccount.mutate();
+	};
+
+	return (
+		<section className='bg-card p-6 rounded-lg border border-border'>
+			<h3 className='text-xl font-semibold mb-4 text-destructive'>Delete Account</h3>
+			<p className='text-muted-foreground mb-4'>
+				Once you delete your account, there is no going back. All of your data will be permanently removed.
+			</p>
+			<form
+				onSubmit={handleSubmit}
+				className='space-y-4'
+			>
+				{error && (
+					<div className='bg-destructive/20 border border-destructive text-destructive px-4 py-3 rounded flex items-center'>
+						<FiAlertCircle className='mr-2' />
+						{error}
+					</div>
+				)}
+				<div className='flex justify-end'>
+					<button
+						type='submit'
+						disabled={deleteAccount.isPending}
+						className='px-4 py-2 text-sm font-medium rounded-md text-destructive-foreground bg-destructive hover:bg-destructive/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-destructive flex items-center'
+					>
+						<FiTrash2 className='mr-2' />
+						Delete Account
+					</button>
+				</div>
+			</form>
+
+			{/* Delete Account Confirmation Modal */}
+			{showConfirmModal && (
+				<div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-[100]">
+					<div className="bg-background rounded-lg shadow-lg max-w-md w-full mx-4 p-6">
+						<h3 className="text-lg font-medium text-destructive">Delete Account</h3>
+						<p className="mt-2 text-muted-foreground">
+							Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.
+						</p>
+						<div className="mt-4 flex justify-end space-x-3">
+							<button
+								onClick={() => setShowConfirmModal(false)}
+								className="px-4 py-2 rounded-md border border-input text-foreground hover:bg-secondary transition-colors"
+							>
+								Cancel
+							</button>
+							<button
+								onClick={confirmDelete}
+								className="px-4 py-2 rounded-md bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors flex items-center"
+								disabled={deleteAccount.isPending}
+							>
+								{deleteAccount.isPending ? (
+									<>
+										<svg
+											className='animate-spin -ml-1 mr-2 h-4 w-4 text-white'
+											xmlns='http://www.w3.org/2000/svg'
+											fill='none'
+											viewBox='0 0 24 24'
+										>
+											<circle
+												className='opacity-25'
+												cx='12'
+												cy='12'
+												r='10'
+												stroke='currentColor'
+												strokeWidth='4'
+											></circle>
+											<path
+												className='opacity-75'
+												fill='currentColor'
+												d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+											></path>
+										</svg>
+										Deleting...
+									</>
+								) : (
+									<>
+										<FiTrash2 className="mr-2" />
+										Confirm Delete
+									</>
+								)}
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
+		</section>
+	);
+}
+
 export default function SecuritySettings() {
 	const { user } = useAuth();
 	return (
 		<div className='max-w-xl mx-auto space-y-10'>
 			<ChangeEmailForm user={user} />
 			<ChangePasswordForm />
+			<DeleteAccountForm />
 		</div>
 	);
 }

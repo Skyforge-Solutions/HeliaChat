@@ -9,7 +9,7 @@ import apiClient from '../../services/api/ApiClient';
 
 export default function Sidebar({ collapsed, toggleSidebar }) {
 	const { data: sessions, isLoading: isSessionsLoading } = apiClient.chat.useGetSessions();
-	const deleteSessionMutation = apiClient.chat.useDeleteSession();
+	const { mutateAsync: clearAllSessions } = apiClient.chat.useDeleteAllSessions();
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState('');
 	const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -38,12 +38,8 @@ export default function Sidebar({ collapsed, toggleSidebar }) {
 		setIsDeleting(true);
 		
 		try {
-			// Delete sessions one by one
-			for (const session of sessions) {
-				await deleteSessionMutation.mutateAsync(session.id);
-				// Small delay to prevent overwhelming the server
-				await new Promise(resolve => setTimeout(resolve, 100));
-			}
+			// Use the clearAllSessions endpoint instead of deleting one by one
+			await clearAllSessions();
 			
 			// Navigate to new chat if we're currently in a chat that was deleted
 			if (location.pathname.startsWith('/chat/') && location.pathname !== '/chat/new') {

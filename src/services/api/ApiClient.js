@@ -139,11 +139,39 @@ class ApiClient {
         ...options,
       });
     },
+
+    // Delete user account
+    useDeleteAccount: (options = {}) => {
+      return useMutation({
+        mutationFn: async (password) => {
+          const response = await this.authClient.delete('/api/auth/me', {
+            data: { password }
+          });
+          return response.data;
+        },
+        ...options,
+      });
+    },
   };
 
   // Chat related hooks
   chat = {
+    // Delete all chat sessions
+    useDeleteAllSessions: (options = {}) => {
+      const queryClient = useQueryClient();
 
+      return useMutation({
+        mutationFn: async () => {
+          const response = await this.authClient.delete('/api/sessions');
+          return response.data;
+        },
+        onSuccess: (data, variables, context) => {
+          queryClient.invalidateQueries({ queryKey: this.keys.sessions });
+          if (options.onSuccess) options.onSuccess(data, variables, context);
+        },
+        ...options,
+      });
+    },
 
     // Get all chat sessions
     useGetSessions: (options = {}) => {

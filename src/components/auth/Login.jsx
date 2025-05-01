@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import logo from '../../assets/logo.svg';
 import { Link } from 'react-router-dom';
-import { login } from '../../services/authService';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Login() {

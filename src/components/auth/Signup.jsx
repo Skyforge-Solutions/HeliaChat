@@ -85,11 +85,15 @@ export default function Signup() {
 			setError('Please create a stronger password');
 			return;
 		}
-
 		setError('');
 		setIsLoading(true);
 
 		try {
+			const response = await register({
+				name: formData.name,
+				email: formData.email,
+				password: formData.password,
+			});
 			// Store signup data in context
 			updateSignupData({
 				name: formData.name,

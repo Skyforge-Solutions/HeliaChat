@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FiChevronDown } from 'react-icons/fi';
 
 // Default model options
@@ -33,6 +33,7 @@ export default function ModelSelector({
   wrapperClass = '',
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
 
   const toggleMenu = () => {
     if (!isDisabled) {
@@ -45,34 +46,50 @@ export default function ModelSelector({
     setIsMenuOpen(false);
   };
 
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className={`${wrapperClass}`}>
-      <div className="relative">
+      <div className="relative" ref={menuRef}>
         <button
           type="button"
           onClick={toggleMenu}
-          className={`flex items-center text-xs text-foreground hover:text-foreground px-2 py-1 rounded-md bg-secondary ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`flex items-center text-xs sm:text-sm text-foreground hover:text-foreground px-1 sm:px-2 py-0.5 sm:py-1 rounded-md bg-secondary ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
           disabled={isDisabled}
         >
-          {selectedModel.name} <FiChevronDown className="ml-1" />
+          <span className="hidden md:inline">{selectedModel.name}</span>
+          <span className="md:hidden">{selectedModel.name.split(' ').pop()}</span>
+          <FiChevronDown className="ml-1" />
         </button>
 
         {isMenuOpen && !isDisabled && (
-          <div className="absolute left-0 bottom-full mb-1 w-56 origin-bottom-left rounded-md bg-card  shadow-lg ring-1 ring-border focus:outline-none z-10">
+          <div className="absolute left-0 bottom-full mb-1 w-40 sm:w-56 origin-bottom-left rounded-md bg-card shadow-lg ring-1 ring-border focus:outline-none z-10">
             <div className="py-1">
               {models.map(model => (
                 <button
                   key={model.id}
                   type="button"
                   onClick={() => selectModel(model)}
-                  className={`flex flex-col w-full text-left px-4 py-2 text-sm ${
+                  className={`flex flex-col w-full text-left px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm ${
                     model.id === selectedModel.id
                       ? 'bg-accent text-accent-foreground'
                       : 'text-card-foreground hover:bg-secondary'
                   }`}
                 >
-                  <span className="font-medium">{model.name}</span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="font-medium text-xs md:text-sm">{model.name}</span>
+                  <span className="text-xs text-muted-foreground line-clamp-2 sm:line-clamp-none">
                     {model.description}
                   </span>
                 </button>

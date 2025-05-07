@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiPlus, FiTrash2, FiSettings } from 'react-icons/fi';
+import { FiPlus, FiTrash2, FiSettings, FiMessageSquare } from 'react-icons/fi';
 import { useNavigate, useLocation } from 'react-router-dom';
 import MobileMenuButton from '../sidebar/MobileMenuButton';
 import SearchBar from '../sidebar/SearchBar';
@@ -108,7 +108,7 @@ export default function Sidebar({ collapsed, toggleSidebar }) {
 					collapsed ? 'w-16' : 'w-64'
 				} bg-background border-r border-border transform ${
 					isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-				} transition-all duration-300 ease-in-out md:relative z-10 pt-4 pb-4 flex flex-col`}
+				} transition-transform duration-300 ease-in-out md:relative z-10 pt-4 pb-4 flex flex-col`}
 			>
 				<div className={`px-2 py-2 ${collapsed ? 'flex justify-center' : ''}`}>
 					<button
@@ -118,7 +118,8 @@ export default function Sidebar({ collapsed, toggleSidebar }) {
 						} flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-sm`}
 						title='New Chat'
 					>
-						<FiPlus size={16} /> {!collapsed && <span className='font-medium'>New Chat</span>}
+						<FiPlus size={16} /> {!collapsed && <span className='font-medium'>
+							New Chat</span>}
 					</button>
 				</div>
 
@@ -138,8 +139,9 @@ export default function Sidebar({ collapsed, toggleSidebar }) {
 						{isSessionsLoading || isDeleting ? (
 							renderSkeletons()
 						) : filteredSessions.length === 0 ? (
-							<li className='text-center text-sm text-muted-foreground py-4'>
-								{searchQuery ? 'No matching chats found' : 'No chats found'}
+							<li className='text-center text-sm text-muted-foreground py-4 flex flex-col items-center'>
+								<FiMessageSquare className="mb-2 opacity-50" size={20} />
+								{!collapsed && (searchQuery ? 'No matching chats found' : 'No chats found')}
 							</li>
 						) : (
 							filteredSessions.map((session) => (

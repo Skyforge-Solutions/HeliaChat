@@ -29,6 +29,7 @@ export default function Login() {
 			// access_token: str
 			// token_type: str = "bearer"
 			// user_name: str
+			
 		} catch (err) {
 			setError(err.message || 'Failed to login. Please check your credentials.');
 			console.error('Login error:', err);

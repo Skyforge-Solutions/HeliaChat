@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import { login as loginService, register, logout as logoutService } from '../services/authService';
+import { login as loginService, register, logout as logoutService, getProfile } from '../services/authService';
 
 import apiClient from '../services/api/ApiClient';
 const AuthContext = createContext(null);
@@ -38,10 +38,12 @@ export const AuthProvider = ({ children }) => {
 						token: data.access_token,
 						refreshToken: data.refresh_token,
 					};
+
 					localStorage.setItem('heliaUser', JSON.stringify(userData));
+					const user = await getProfile();
 					setAuthState({
 						isAuthenticated: true,
-						user: userData,
+						user: user,
 				loading: false,
 			});
 			return data;

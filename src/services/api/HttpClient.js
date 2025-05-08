@@ -16,11 +16,11 @@ class HttpClient {
       timeout = 30000,
       defaultHeaders = {},
     } = options;
-    
+
     this.pendingRequests = new Map();
     this.isRefreshing = false;
     this.refreshSubscribers = [];
-    
+
     this.client = axios.create({
       baseURL: baseURL || API_URL,
       headers: {
@@ -75,8 +75,8 @@ class HttpClient {
    */
   getRefreshToken() {
     try {
-      return JSON.parse(localStorage.getItem('heliaUser'))?.refreshToken || 
-             JSON.parse(sessionStorage.getItem('heliaUser'))?.refreshToken;
+      return JSON.parse(localStorage.getItem('heliaUser'))?.refreshToken ||
+        JSON.parse(sessionStorage.getItem('heliaUser'))?.refreshToken;
     } catch (error) {
       console.error('Error accessing refresh token storage:', error);
       return null;
@@ -128,7 +128,7 @@ class HttpClient {
 
       const { access_token, refresh_token } = response.data;
       this.updateTokens({ access_token, refresh_token });
-      
+
       return access_token;
     } catch (error) {
       console.error('Failed to refresh token:', error);
@@ -165,13 +165,13 @@ class HttpClient {
         // Generate a unique request ID
         const requestId = `${config.method}:${config.url}:${Date.now()}`;
         config.requestId = requestId;
-        
+
         // Track pending requests
         this.pendingRequests.set(requestId, { timestamp: Date.now() });
-        
+
         // Add request start time for performance tracking
         config.metadata = { startTime: new Date() };
-        
+
         return config;
       },
       (error) => {
@@ -190,31 +190,31 @@ class HttpClient {
         const { config } = response;
         const endTime = new Date();
         const duration = endTime - config.metadata.startTime;
-        
+
         // Clean up tracking
         if (config.requestId) {
           this.pendingRequests.delete(config.requestId);
         }
-        
+
         return response;
       },
       async (error) => {
         const { config } = error;
-        
+
         // If no config exists, this is not a request error
         if (!config) {
           console.error('Request configuration error:', error.message);
           return Promise.reject(error);
         }
-        
+
         // Get request tracking info
         const requestId = config.requestId;
-        
+
         // Clean up tracking
         if (requestId) {
           this.pendingRequests.delete(requestId);
         }
-        
+
         // Handle token refresh for 401 errors
         if (error.response && error.response.status === 401 && !config._retry) {
           if (this.isRefreshing) {
@@ -234,13 +234,13 @@ class HttpClient {
           try {
             const newToken = await this.refreshAccessToken();
             this.isRefreshing = false;
-            
+
             // Update the request with the new token
             config.headers.Authorization = `Bearer ${newToken}`;
-            
+
             // Notify all the subscribers about the new token
             this.notifyTokenRefreshed(newToken);
-            
+
             // Retry the original request
             return this.client(config);
           } catch (refreshError) {
@@ -250,7 +250,7 @@ class HttpClient {
             return Promise.reject(error);
           }
         }
-        
+
         // Handle different error types
         if (error.response) {
           await this.handleResponseError(error);
@@ -280,11 +280,11 @@ class HttpClient {
         // Bad request
         console.error('Bad request:', data);
         break;
-        
+
       case 401:
         // Handle unauthorized
         console.error('Unauthorized access:', url);
-        
+
         // Clear tokens
         try {
           localStorage.removeItem('auth_token');
@@ -293,27 +293,27 @@ class HttpClient {
           console.error('Error clearing auth tokens:', e);
         }
         break;
-        
+
       case 403:
         // Handle forbidden
         console.error('Access forbidden:', url);
         break;
-        
+
       case 404:
         // Handle not found
         console.error('Resource not found:', url);
         break;
-        
+
       case 422:
         // Validation errors
         console.error('Validation error:', data);
         break;
-        
+
       case 429:
         // Rate limiting
         console.error('Rate limit exceeded:', url);
         break;
-        
+
       case 500:
       case 502:
       case 503:
@@ -321,7 +321,7 @@ class HttpClient {
         // Handle server errors
         console.error(`Server error (${status}):`, url);
         break;
-        
+
       default:
         // Handle other status codes
         console.error(`HTTP error ${status}:`, url);

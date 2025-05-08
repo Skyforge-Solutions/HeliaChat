@@ -66,6 +66,7 @@ const PendingMessageHandler = memo(
 
 				// Mark the pending message as sent
 				pendingMessage.sent = true;
+				useCredit();	
 			}
 		}, [pendingMessage, chatId, sendMessage, setChatHistory, useCredit]);
 
@@ -144,15 +145,14 @@ const ChatArea = ({ sidebarCollapsed }) => {
 			// Check if user has credits before sending
 			if (credits <= 0) return;
 
-			// Use one credit
-			useCredit();
-
 			await sendMessage({
 				sessionId: chatId,
 				content,
 				file,
 				modelId,
 			});
+			// Use one credit
+			useCredit();
 		},
 		[chatId, sendMessage, credits, useCredit]
 	);

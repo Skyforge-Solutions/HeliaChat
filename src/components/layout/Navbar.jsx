@@ -10,7 +10,8 @@ import apiClient from '../../services/api/ApiClient';
 
 export default function Navbar() {
 	const { user, logout } = useAuth();
-	const { credits } = useCredits();
+	const { credits ,} = useCredits();
+	console.log(credits)
 	const [showSettingsModal, setShowSettingsModal] = useState(false);
 
 	const handleOpenSettings = () => {

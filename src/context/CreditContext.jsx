@@ -1,59 +1,78 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import apiClient from '../services/api/ApiClient';
 
-const DEFAULT_CREDITS = 100; // Default number of credits for new users
 const CreditContext = createContext();
 
 export function CreditProvider({ children }) {
 	const [credits, setCredits] = useState(0);
-	const [loading, setLoading] = useState(true);
 
-	// Load credits from localStorage on initialization
-	useEffect(() => {
-		const loadCredits = () => {
-			const storedCredits = localStorage.getItem('heliaCredits');
-			if (storedCredits !== null) {
-				setCredits(parseInt(storedCredits, 10));
+	// Use the React Query hook directly
+	const {
+		data: creditData,
+		isLoading: loading,
+		refetch: refetchCredits,
+		isFetching,
+	} = apiClient.billing.useGetCredits({
+		onSuccess: (data) => {
+			if (data) {
+				setCredits(data);
 			}
-			setLoading(false);
-		};
+		},
+		onError: (error) => {
+			console.error('Failed to load credits:', error);
+		},
+	});
 
-		loadCredits();
-	}, []);
-
-	// Save credits to localStorage whenever they change
+	// Save credits to localStorage as backup whenever they change
 	useEffect(() => {
-		if (!loading) {
+		if (!loading && credits) {
 			localStorage.setItem('heliaCredits', credits.toString());
 		}
 	}, [credits, loading]);
 
-	// Add credits to a user account
-	const addCredits = (amount) => {
-		setCredits((prev) => prev + amount);
-	};
+	// Effect to get credit data when loading is complete
+	useEffect(() => {
+		if (!loading && creditData) {
+			setCredits(creditData.credits_remaining);
+		}
+	}, [loading, creditData]);
 
 	// Use one credit (for sending a message)
-	const useCredit = () => {
+	const useCredit = async () => {
 		if (credits > 0) {
+			// Optimistically update the UI
 			setCredits((prev) => prev - 1);
-			return true; // Successfully used a credit
+
+			// We'd need to add this endpoint to the API client
+			// For now, we're just returning true since we updated locally
+			// Ideally, we'd call something like:
+			// await apiClient.billing.useConsumeCredit().mutateAsync();
+			return true;
 		}
 		return false; // No credits available
 	};
 
-	// Reset credits to default (for new users)
-	const resetCredits = () => {
-		setCredits(DEFAULT_CREDITS);
+	// Refresh credit balance from the server
+	const refreshCredits = async () => {
+		try {
+			const { data } = await refetchCredits();
+			if (data) {
+				setCredits(data.credits_remaining);
+			}
+			return data;
+		} catch (error) {
+			console.error('Failed to refresh credits:', error);
+			throw error;
+		}
 	};
 
 	return (
 		<CreditContext.Provider
 			value={{
 				credits,
-				loading,
-				addCredits,
+				loading: loading || isFetching,
 				useCredit,
-				resetCredits,
+				refreshCredits,
 			}}
 		>
 			{children}

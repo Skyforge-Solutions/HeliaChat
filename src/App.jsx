@@ -20,6 +20,9 @@ import { PendingMessageProvider } from './context/PendingMessageContext';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword from './pages/auth/ResetPassword';
 import BuyCreditsPage from './pages/buy-credit';
+import CheckoutSuccessPage from './pages/billing/CheckoutSuccessPage';
+import PaymentHistoryPage from './pages/billing/PaymentHistoryPage';
+
 function App() {
 	return (
 		<ThemeProvider>
@@ -42,6 +45,14 @@ function App() {
 											<Route
 												path='/buy-credit'
 												element={<BuyCreditsPage />}
+											/>
+											<Route
+												path='/checkout-success'
+												element={<CheckoutSuccessPage />}
+											/>
+											<Route
+												path='/payment-history'
+												element={<PaymentHistoryPage />}
 											/>
 										</Route>
 									</Route>

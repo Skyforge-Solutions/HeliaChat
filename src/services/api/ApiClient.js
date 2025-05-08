@@ -21,6 +21,10 @@ class ApiClient {
       sessions: ['chat', 'sessions'],
       session: (id) => ['chat', 'sessions', id],
       history: (chatId) => ['chat', 'history', chatId],
+      // Billing related keys
+      billingPlans: ['billing', 'plans'],
+      billingCredits: ['billing', 'credits'],
+      billingPurchases: ['billing', 'purchases'],
     };
   }
 
@@ -67,7 +71,7 @@ class ApiClient {
         queryKey: this.keys.profile,
         queryFn: async () => {
           const response = await this.authClient.get('/api/auth/me');
-  
+
           return response.data;
         },
         ...options,
@@ -290,6 +294,85 @@ class ApiClient {
         queryKey: this.keys.profile,
         queryFn: async () => {
           const response = await this.authClient.get('/api/users/me');
+          return response.data;
+        },
+        ...options,
+      });
+    },
+  };
+
+  // Billing related hooks
+  billing = {
+    // Get available credit plans
+    useGetPlans: (options = {}) => {
+      return useQuery({
+        queryKey: this.keys.billingPlans,
+        queryFn: async () => {
+          const response = await this.authClient.get('/api/billing/plans');
+          return response.data;
+        },
+        ...options,
+      });
+    },
+
+    // Get user's credit balance
+    useGetCredits: (options = {}) => {
+      return useQuery({
+        queryKey: this.keys.billingCredits,
+        queryFn: async () => {
+          const response = await this.authClient.get('/api/billing/credits');
+          return response.data;
+        },
+        ...options,
+      });
+    },
+
+    // Create checkout session
+    useCreateCheckout: (options = {}) => {
+      return useMutation({
+        mutationFn: async (productId) => {
+          const response = await this.authClient.post('/api/billing/create-checkout', {
+            product_id: productId,
+          });
+          return response.data;
+        },
+        ...options,
+      });
+    },
+
+    // Get purchase history
+    useGetPurchases: (options = {}) => {
+      return useQuery({
+        queryKey: this.keys.billingPurchases,
+        queryFn: async () => {
+          const response = await this.authClient.get('/api/billing/purchases');
+          return response.data;
+        },
+        ...options,
+      });
+    },
+
+
+
+    // Get detailed information about a specific payment
+    useGetPaymentDetails: (paymentId, options = {}) => {
+      return useQuery({
+        queryKey: ['billing', 'payment', paymentId],
+        queryFn: async () => {
+          const response = await this.authClient.get(`/api/billing/payments/${paymentId}`);
+          return response.data;
+        },
+        enabled: !!paymentId,
+        ...options,
+      });
+    },
+
+
+    // Download invoice PDF for a specific payment
+    useDownloadInvoice: (options = {}) => {
+      return useMutation({
+        mutationFn: async (paymentId) => {
+          const response = await this.authClient.get(`/api/billing/download-invoice/${paymentId}`);
           return response.data;
         },
         ...options,

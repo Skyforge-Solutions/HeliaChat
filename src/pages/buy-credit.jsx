@@ -31,10 +31,8 @@ export default function BuyCreditsPage() {
 
 	const { mutate: createCheckout, isPending } = apiClient.billing.useCreateCheckout({
 		onSuccess: (data) => {
-			console.log(data, 'data');
 			if (data && data.payment_link) {
-				console.log(data, 'data');
-				window.location.href = data.payment_link;
+					window.location.href = data.payment_link;
 			} else {
 				setError('Failed to create checkout. Please try again later.');
 			}

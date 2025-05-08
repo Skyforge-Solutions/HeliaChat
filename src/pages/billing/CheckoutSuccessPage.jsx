@@ -161,7 +161,7 @@ function CheckoutSuccessPage() {
 						<div className='flex justify-between py-2 border-b border-border'>
 							<span className='text-muted-foreground'>Amount:</span>
 							<span className='font-medium text-foreground'>
-								${purchaseDetails.total_amount.toFixed(2)} {purchaseDetails.currency}
+								{(purchaseDetails.total_amount / 100).toFixed(2)} {purchaseDetails.currency}
 							</span>
 						</div>
 						<div className='flex justify-between py-2 border-b border-border'>

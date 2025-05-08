@@ -31,8 +31,6 @@ export default function UserProfileMenu({ user, onOpenUserSettings, onLogout }) 
   };
 
   const selectLanguage = language => {
-    // Would update user's language preference in a real app
-    console.log(`Selected language: ${language}`);
     setIsLanguageMenuOpen(false);
   };
 

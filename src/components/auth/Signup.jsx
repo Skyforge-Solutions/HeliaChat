@@ -115,7 +115,6 @@ export default function Signup() {
 		e.preventDefault();
 		setError('');
 		setIsLoading(true);
-		console.log(signupData.email, otp);
 		try {
 			await verifyEmail(signupData.email, otp);
 

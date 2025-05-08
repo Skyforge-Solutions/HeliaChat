@@ -36,7 +36,6 @@ export const useChatMessage = (chatId) => {
 
     try {
       const url = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/auth'}/api/chat/send`;
-      console.log('Sending request to:', url);
 
       // Create FormData for multipart/form-data request
       const formData = new FormData();

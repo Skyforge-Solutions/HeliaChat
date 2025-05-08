@@ -26,9 +26,9 @@ import PaymentHistoryPage from './pages/billing/PaymentHistoryPage';
 function App() {
 	return (
 		<ThemeProvider>
-			<AuthProvider>
-				<SignupProvider>
-					<CreditProvider>
+			<CreditProvider>
+				<AuthProvider>
+					<SignupProvider>
 						<PendingMessageProvider>
 							<Router>
 								<Routes>
@@ -91,9 +91,9 @@ function App() {
 								</Routes>
 							</Router>
 						</PendingMessageProvider>
-					</CreditProvider>
-				</SignupProvider>
-			</AuthProvider>
+					</SignupProvider>
+				</AuthProvider>{' '}
+			</CreditProvider>
 		</ThemeProvider>
 	);
 }

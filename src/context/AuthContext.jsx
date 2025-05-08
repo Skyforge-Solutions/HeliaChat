@@ -2,9 +2,11 @@ import { createContext, useState, useContext, useEffect } from 'react';
 import { login as loginService, register, logout as logoutService, getProfile } from '../services/authService';
 
 import apiClient from '../services/api/ApiClient';
+import { useCredits } from './CreditContext';
 const AuthContext = createContext(null);
 
 export const useAuth = () => useContext(AuthContext);
+
 
 export const AuthProvider = ({ children }) => {
 	const [authState, setAuthState] = useState({
@@ -13,6 +15,8 @@ export const AuthProvider = ({ children }) => {
 		loading: true
 	});
 	const { data: profile, isLoading: isProfileLoading } = apiClient.auth.useGetProfile();
+	const { refreshCredits } = useCredits();
+	
 	useEffect(() => {
 		if (profile) {
 			setAuthState({
@@ -46,6 +50,11 @@ export const AuthProvider = ({ children }) => {
 						user: user,
 				loading: false,
 			});
+			
+			if (refreshCredits ) {
+				await refreshCredits();
+			}
+
 			return data;
 		} catch (error) {
 			throw error;

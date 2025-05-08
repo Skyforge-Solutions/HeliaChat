@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext'; // Assuming you have an aut
 import Loading from '../shared/loading';
 const AuthLayout = () => {
 	const { isAuthenticated, isProfileLoading } = useAuth(); // Get authentication status
-	console.log(isAuthenticated);
+
 	if (isProfileLoading) {
 		return <Loading />;
 	}
